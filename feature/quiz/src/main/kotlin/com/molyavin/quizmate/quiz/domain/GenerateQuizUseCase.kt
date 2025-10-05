@@ -11,9 +11,13 @@ import kotlin.random.Random
 class GenerateQuizUseCase @Inject constructor(
     private val vocabularyRepository: VocabularyRepository
 ) {
-    suspend operator fun invoke(count: Int = 10): Result<List<QuizQuestion>> {
+    suspend operator fun invoke(count: Int = 10, folderId: String? = null): Result<List<QuizQuestion>> {
         return try {
-            val words = vocabularyRepository.getRandomWords(count)
+            val words = when (folderId) {
+                "favorites" -> vocabularyRepository.getFavoriteWords().take(count)
+                null -> vocabularyRepository.getRandomWords(count)
+                else -> vocabularyRepository.getRandomWordsFromFolder(folderId, count)
+            }
 
             if (words.isEmpty()) {
                 return Result.failure(Exception("No words in dictionary. Please add some words first."))

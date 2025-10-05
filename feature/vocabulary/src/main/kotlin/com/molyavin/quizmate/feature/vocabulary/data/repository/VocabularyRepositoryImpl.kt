@@ -82,6 +82,17 @@ class VocabularyRepositoryImpl @Inject constructor(
         return wordsCache.value.shuffled().take(count)
     }
 
+    override suspend fun getRandomWordsFromFolder(folderId: String, count: Int): List<Word> {
+        return wordsCache.value
+            .filter { it.folderId == folderId }
+            .shuffled()
+            .take(count)
+    }
+
+    override suspend fun getFavoriteWords(): List<Word> {
+        return wordsCache.value.filter { it.isFavorite }
+    }
+
     override suspend fun addWord(word: Word): String {
         if (firebaseAuth.currentUser == null) {
             throw Exception("User not authenticated")

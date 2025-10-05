@@ -47,6 +47,22 @@ class FlashCardsRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getFavoriteCards(): Flow<List<FlashCard>> {
+        return vocabularyRepository.getAllWords().map { words ->
+            words.filter { it.isFavorite }.map { word ->
+                FlashCard(
+                    id = word.id,
+                    frontText = word.english,
+                    backText = word.ukrainian,
+                    example = word.example,
+                    category = word.category,
+                    difficulty = word.difficulty,
+                    imageUrl = word.imageUrl
+                )
+            }
+        }
+    }
+
     override fun getCardsByCategory(category: String): Flow<List<FlashCard>> {
         return vocabularyRepository.getAllWords().map { words ->
             words.filter { it.category == category }.map { word ->

@@ -151,7 +151,14 @@ fun MainScreen() {
                 )
             }
 
-            composable("quiz/{folderId}") { backStackEntry ->
+            composable("flashcards/favorites") {
+                FlashCardsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    folderId = "favorites"
+                )
+            }
+
+            composable("quiz/{folderId}") {
                 QuizScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
@@ -159,7 +166,13 @@ fun MainScreen() {
 
             composable("favorites") {
                 FavoritesScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToFlashCards = {
+                        navController.navigate("flashcards/favorites")
+                    },
+                    onNavigateToQuiz = {
+                        navController.navigate("quiz/favorites")
+                    }
                 )
             }
 

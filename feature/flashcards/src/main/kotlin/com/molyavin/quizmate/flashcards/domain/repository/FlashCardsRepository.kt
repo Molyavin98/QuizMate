@@ -18,6 +18,11 @@ interface FlashCardsRepository {
     fun getCardsByFolder(folderId: String): Flow<List<FlashCard>>
 
     /**
+     * Отримати улюблені картки
+     */
+    fun getFavoriteCards(): Flow<List<FlashCard>>
+
+    /**
      * Отримати картки по категорії
      */
     fun getCardsByCategory(category: String): Flow<List<FlashCard>>

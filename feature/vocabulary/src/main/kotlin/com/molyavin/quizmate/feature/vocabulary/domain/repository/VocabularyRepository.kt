@@ -36,6 +36,16 @@ interface VocabularyRepository {
     suspend fun getRandomWords(count: Int): List<Word>
 
     /**
+     * Отримати випадкові слова з папки для тесту
+     */
+    suspend fun getRandomWordsFromFolder(folderId: String, count: Int): List<Word>
+
+    /**
+     * Отримати обрані слова
+     */
+    suspend fun getFavoriteWords(): List<Word>
+
+    /**
      * Додати нове слово
      */
     suspend fun addWord(word: Word): String
