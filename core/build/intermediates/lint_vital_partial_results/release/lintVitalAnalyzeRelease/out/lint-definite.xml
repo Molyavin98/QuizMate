@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.13.0" type="incidents">
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_english&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+                startOffset="2487"
+                endOffset="2543"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+            line="55"
+            column="13"
+            startOffset="2495"
+            endLine="55"
+            endColumn="40"
+            endOffset="2522"/>
+    </incident>
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_english&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+                startOffset="2490"
+                endOffset="2546"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+            line="55"
+            column="13"
+            startOffset="2498"
+            endLine="55"
+            endColumn="40"
+            endOffset="2525"/>
+    </incident>
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_ukrainian&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+                startOffset="2548"
+                endOffset="2606"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+            line="56"
+            column="13"
+            startOffset="2556"
+            endLine="56"
+            endColumn="42"
+            endOffset="2585"/>
+    </incident>
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_ukrainian&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+                startOffset="2551"
+                endOffset="2609"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+            line="56"
+            column="13"
+            startOffset="2559"
+            endLine="56"
+            endColumn="42"
+            endOffset="2588"/>
+    </incident>
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_transcription&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+                startOffset="2611"
+                endOffset="2675"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-ru/strings.xml"
+            line="57"
+            column="13"
+            startOffset="2619"
+            endLine="57"
+            endColumn="46"
+            endOffset="2652"/>
+    </incident>
+
+    <incident
+        id="ExtraTranslation"
+        severity="fatal"
+        message="&quot;word_details_transcription&quot; is translated here but not found in default locale">
+        <fix-replace
+            description="Remove translation"
+            replacement=""
+            priority="0">
+            <range
+                file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+                startOffset="2614"
+                endOffset="2678"/>
+        </fix-replace>
+        <location
+            file="${:core*release*MAIN*sourceProvider*0*resDir*0}/values-uk/strings.xml"
+            line="57"
+            column="13"
+            startOffset="2622"
+            endLine="57"
+            endColumn="46"
+            endOffset="2655"/>
+    </incident>
+
+</incidents>

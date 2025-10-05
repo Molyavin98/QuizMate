@@ -38,13 +38,12 @@ import kotlin.math.roundToInt
 @Composable
 fun FlashCardsScreen(
     onNavigateBack: () -> Unit,
-    folderId: Long? = null,
+    folderId: String? = null,
     viewModel: FlashCardsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Завантажити картки для конкретної папки
     LaunchedEffect(folderId) {
         viewModel.loadCardsForFolder(folderId)
     }
@@ -56,7 +55,6 @@ fun FlashCardsScreen(
                     snackbarHostState.showSnackbar(effect.message)
                 }
                 is FlashCardsContract.Effect.SessionCompleted -> {
-                    // Handled by showSessionComplete state
                 }
             }
         }

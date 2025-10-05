@@ -3,7 +3,6 @@ package com.molyavin.quizmate.feature.vocabulary.domain.usecase
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import kotlinx.coroutines.flow.first
@@ -34,7 +33,7 @@ class ImportWordsFromJsonUseCase @Inject constructor(
         val errors: List<String>
     )
 
-    suspend operator fun invoke(jsonContent: String, folderId: Long? = null): Result<ImportResult> {
+    suspend operator fun invoke(jsonContent: String, folderId: String? = null): Result<ImportResult> {
         return try {
             val words = parseJson(jsonContent)
 
@@ -53,9 +52,9 @@ class ImportWordsFromJsonUseCase @Inject constructor(
             }
             val existingEnglishWords = existingWords.map { it.english.lowercase() }.toSet()
 
-            var imported = 0
             var skipped = 0
             val errors = mutableListOf<String>()
+            val wordsToImport = mutableListOf<Word>()
 
             uniqueWords.forEachIndexed { index, wordData ->
                 try {
@@ -75,8 +74,8 @@ class ImportWordsFromJsonUseCase @Inject constructor(
                     }
 
                     val word = Word(
-                        english = wordData.english.trim(),
-                        ukrainian = wordData.ukrainian.trim(),
+                        english = cleanIndexPrefix(wordData.english.trim()),
+                        ukrainian = cleanIndexPrefix(wordData.ukrainian.trim()),
                         example = wordData.example?.trim(),
                         category = wordData.category?.trim(),
                         difficulty = parseDifficulty(wordData.difficulty),
@@ -84,12 +83,27 @@ class ImportWordsFromJsonUseCase @Inject constructor(
                         folderId = folderId
                     )
 
-                    repository.addWord(word)
-                    imported++
+                    // Додаємо слово до списку для batch імпорту
+                    wordsToImport.add(word)
                 } catch (e: Exception) {
                     skipped++
                     errors.add("Word at index $index: ${e.message}")
                 }
+            }
+
+            // Зберігаємо всі слова одночасно через batch
+            val imported = if (wordsToImport.isNotEmpty()) {
+                try {
+                    timber.log.Timber.d("Batch importing ${wordsToImport.size} words")
+                    repository.addWordsBatch(wordsToImport)
+                    wordsToImport.size
+                } catch (e: Exception) {
+                    timber.log.Timber.e(e, "Failed to batch import words")
+                    errors.add("Batch import failed: ${e.message}")
+                    0
+                }
+            } else {
+                0
             }
 
             Result.success(
@@ -123,12 +137,22 @@ class ImportWordsFromJsonUseCase @Inject constructor(
         }
     }
 
-    private fun parseDifficulty(difficultyStr: String?): Difficulty {
-        return try {
-            difficultyStr?.let { Difficulty.valueOf(it.uppercase()) } ?: Difficulty.MEDIUM
-        } catch (e: Exception) {
-            Difficulty.MEDIUM
-        }
+    private fun parseDifficulty(difficultyStr: String?): String {
+        return difficultyStr?.uppercase() ?: "MEDIUM"
+    }
+
+    /**
+     * Видаляє індекси на початку і в кінці слова
+     * Приклади:
+     * - "1. hello" -> "hello"
+     * - "hello10" -> "hello"
+     * - "tree15" -> "tree"
+     */
+    private fun cleanIndexPrefix(text: String): String {
+        return text
+            .replace(Regex("^\\d+[.)\\s]+"), "") // Видаляє "1. " або "2) " на початку
+            .replace(Regex("\\d+$"), "") // Видаляє цифри в кінці
+            .trim()
     }
 
     private data class WordData(

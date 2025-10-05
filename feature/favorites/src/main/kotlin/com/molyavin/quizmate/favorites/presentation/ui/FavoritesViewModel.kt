@@ -2,9 +2,8 @@ package com.molyavin.quizmate.favorites.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordDao
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
-import com.molyavin.quizmate.feature.vocabulary.mapper.toDomain
+import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,20 +14,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    private val vocabularyWordDao: VocabularyWordDao
+    private val vocabularyRepository: VocabularyRepository
 ) : ViewModel() {
 
-    val favoriteWords: StateFlow<List<Word>> = vocabularyWordDao.getFavoriteWords()
-        .map { entities -> entities.map { it.toDomain() } }
+    val favoriteWords: StateFlow<List<Word>> = vocabularyRepository.getAllWords()
+        .map { words -> words.filter { it.isFavorite } }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
 
-    fun toggleFavorite(wordId: Long) {
+    fun toggleFavorite(wordId: String) {
         viewModelScope.launch {
-            vocabularyWordDao.updateFavoriteStatus(wordId, false)
+            val word = favoriteWords.value.find { it.id == wordId }
+            if (word != null) {
+                vocabularyRepository.updateWord(word.copy(isFavorite = false))
+            }
         }
     }
 

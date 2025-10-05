@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml:2:13-83
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml:2:13-83
+	package
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml
+	xmlns:android
+		ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml:2:23-81
+uses-sdk
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml reason: use-sdk injection requested
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml
+	android:targetSdkVersion
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml
+	android:minSdkVersion
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/auth/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest4497279736629228390.xml

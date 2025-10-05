@@ -2,12 +2,12 @@ package com.molyavin.quizmate.feature.vocabulary.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordDao
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.AddWordUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.DeleteWordUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllWordsUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.SearchWordsUseCase
+import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +31,7 @@ class DictionaryViewModel @Inject constructor(
     private val createFolderUseCase: com.molyavin.quizmate.feature.vocabulary.domain.usecase.CreateFolderUseCase,
     private val deleteFolderUseCase: com.molyavin.quizmate.feature.vocabulary.domain.usecase.DeleteFolderUseCase,
     private val getWordsByFolderUseCase: com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetWordsByFolderUseCase,
-    private val vocabularyWordDao: VocabularyWordDao,
-    private val vocabularyRepository: com.molyavin.quizmate.feature.vocabulary.data.repository.VocabularyRepositoryImpl
+    private val vocabularyRepository: VocabularyRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DictionaryContract.State())
@@ -78,8 +77,7 @@ class DictionaryViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             try {
-                // Синхронізувати тільки обрану папку (або все якщо папка не обрана)
-                vocabularyRepository.syncFolderFromFirestore(_state.value.selectedFolderId)
+                vocabularyRepository.syncFromFirestore()
             } catch (e: Exception) {
                 _effect.send(DictionaryContract.Effect.ShowError(e.message ?: "Sync failed"))
             }
@@ -130,9 +128,9 @@ class DictionaryViewModel @Inject constructor(
         ukrainian: String,
         example: String,
         category: String,
-        difficulty: com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty,
+        difficulty: String,
         imageUrl: String,
-        folderId: Long? = null
+        folderId: String? = null
     ) {
         viewModelScope.launch {
             val word = Word(
@@ -183,7 +181,7 @@ class DictionaryViewModel @Inject constructor(
         _state.update { it.copy(selectedWord = null) }
     }
 
-    private fun importFromJson(jsonContent: String, folderId: Long? = null) {
+    private fun importFromJson(jsonContent: String, folderId: String? = null) {
         _state.update { it.copy(isImporting = true) }
 
         viewModelScope.launch {
@@ -241,9 +239,10 @@ class DictionaryViewModel @Inject constructor(
 
                     // Якщо папки завантажилися вперше і є хоча б одна папка
                     if (currentSelectedId == null && folders.isNotEmpty()) {
-                        // Автоматично обрати першу папку
-                        _state.update { it.copy(vocabularyFolders = folders, selectedFolderId = folders.first().id) }
-                        loadWordsByFolder(folders.first().id)
+                        // Знайти першу папку зі словами, або взяти просто першу
+                        val folderToSelect = folders.firstOrNull { it.wordCount > 0 } ?: folders.first()
+                        _state.update { it.copy(vocabularyFolders = folders, selectedFolderId = folderToSelect.id) }
+                        loadWordsByFolder(folderToSelect.id)
                     } else {
                         _state.update { it.copy(vocabularyFolders = folders) }
                     }
@@ -251,12 +250,12 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    private fun selectFolder(folderId: Long?) {
+    private fun selectFolder(folderId: String?) {
         _state.update { it.copy(selectedFolderId = folderId) }
         loadWordsByFolder(folderId)
     }
 
-    private fun loadWordsByFolder(folderId: Long?) {
+    private fun loadWordsByFolder(folderId: String?) {
         _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
@@ -291,17 +290,14 @@ class DictionaryViewModel @Inject constructor(
 
     private fun createFolder(name: String) {
         viewModelScope.launch {
-            val hadFolders = _state.value.vocabularyFolders.isNotEmpty()
             val result = createFolderUseCase(name)
 
             result.onSuccess { newFolderId ->
                 _state.update { it.copy(showAddFolderDialog = false) }
                 _effect.send(DictionaryContract.Effect.ShowSuccess("Folder created"))
 
-                // Якщо це перша папка, автоматично обрати її
-                if (!hadFolders) {
-                    selectFolder(newFolderId)
-                }
+                // Завжди автоматично обрати нову створену папку
+                selectFolder(newFolderId)
             }.onFailure { error ->
                 _effect.send(
                     DictionaryContract.Effect.ShowError(
@@ -312,7 +308,7 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    private fun deleteFolder(folderId: Long) {
+    private fun deleteFolder(folderId: String) {
         viewModelScope.launch {
             try {
                 deleteFolderUseCase(folderId)
@@ -339,12 +335,13 @@ class DictionaryViewModel @Inject constructor(
         }
     }
 
-    private fun toggleFavorite(wordId: Long) {
+    private fun toggleFavorite(wordId: String) {
         viewModelScope.launch {
             try {
                 val currentWord = _state.value.words.find { it.id == wordId }
                 if (currentWord != null) {
-                    vocabularyWordDao.updateFavoriteStatus(wordId, !currentWord.isFavorite)
+                    val updatedWord = currentWord.copy(isFavorite = !currentWord.isFavorite)
+                    vocabularyRepository.updateWord(updatedWord)
                 }
             } catch (e: Exception) {
                 _effect.send(

@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetFlashCardsUseCase @Inject constructor(
     private val repository: FlashCardsRepository
 ) {
-    operator fun invoke(folderId: Long? = null): Flow<List<FlashCard>> {
+    operator fun invoke(folderId: String? = null): Flow<List<FlashCard>> {
         return if (folderId != null) {
             repository.getCardsByFolder(folderId)
         } else {

@@ -60,7 +60,7 @@ import com.molyavin.quizmate.core.ui.GradientTopAppBar
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    onNavigateToFolder: (Long) -> Unit,
+    onNavigateToFolder: (String) -> Unit,
     onNavigateToFavorites: () -> Unit = {},
     onNavigateToProfile: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()

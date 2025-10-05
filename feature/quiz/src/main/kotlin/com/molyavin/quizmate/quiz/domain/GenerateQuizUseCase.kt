@@ -41,18 +41,21 @@ class GenerateQuizUseCase @Inject constructor(
             QuestionType.TRANSLATE_TO_ENGLISH -> word.english
         }
 
-        // Get 3 wrong answers
+        // Get 3 unique wrong answers (excluding duplicates)
         val wrongAnswers = allWords
             .filter { it.id != word.id }
-            .shuffled()
-            .take(3)
             .map { w ->
                 when (questionType) {
                     QuestionType.TRANSLATE_TO_UKRAINIAN -> w.ukrainian
                     QuestionType.TRANSLATE_TO_ENGLISH -> w.english
                 }
             }
+            .filter { it != correctAnswer } // Exclude same translation as correct answer
+            .distinct() // Remove duplicates
+            .shuffled()
+            .take(3)
 
+        // If we don't have enough unique wrong answers, fill with what we have
         val options = (wrongAnswers + correctAnswer).shuffled()
 
         return QuizQuestion(

@@ -2,7 +2,7 @@ package com.molyavin.quizmate.feature.vocabulary.di;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.molyavin.quizmate.feature.vocabulary.data.local.FirestoreDataSource;
+import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFirestoreDataSource;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.Preconditions;
@@ -26,7 +26,7 @@ import javax.inject.Provider;
     "cast",
     "deprecation"
 })
-public final class VocabularyModule_Companion_ProvideFirestoreDataSourceFactory implements Factory<FirestoreDataSource> {
+public final class VocabularyModule_Companion_ProvideFirestoreDataSourceFactory implements Factory<VocabularyFirestoreDataSource> {
   private final Provider<FirebaseFirestore> firestoreProvider;
 
   private final Provider<FirebaseAuth> firebaseAuthProvider;
@@ -38,7 +38,7 @@ public final class VocabularyModule_Companion_ProvideFirestoreDataSourceFactory 
   }
 
   @Override
-  public FirestoreDataSource get() {
+  public VocabularyFirestoreDataSource get() {
     return provideFirestoreDataSource(firestoreProvider.get(), firebaseAuthProvider.get());
   }
 
@@ -47,8 +47,8 @@ public final class VocabularyModule_Companion_ProvideFirestoreDataSourceFactory 
     return new VocabularyModule_Companion_ProvideFirestoreDataSourceFactory(firestoreProvider, firebaseAuthProvider);
   }
 
-  public static FirestoreDataSource provideFirestoreDataSource(FirebaseFirestore firestore,
-      FirebaseAuth firebaseAuth) {
+  public static VocabularyFirestoreDataSource provideFirestoreDataSource(
+      FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
     return Preconditions.checkNotNullFromProvides(VocabularyModule.Companion.provideFirestoreDataSource(firestore, firebaseAuth));
   }
 }

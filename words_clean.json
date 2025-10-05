@@ -1,0 +1,162 @@
+[
+  {
+    "english": "hello",
+    "ukrainian": "привіт",
+    "example": "Hello, how are you?",
+    "category": "greetings",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1502759683299-cdcd6974244f?w=400"
+  },
+  {
+    "english": "goodbye",
+    "ukrainian": "до побачення",
+    "example": "Goodbye, see you later!",
+    "category": "greetings",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1502764613149-7f1d229e230f?w=400"
+  },
+  {
+    "english": "computer",
+    "ukrainian": "комп'ютер",
+    "example": "I work on a computer every day.",
+    "category": "technology",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400"
+  },
+  {
+    "english": "beautiful",
+    "ukrainian": "красивий",
+    "example": "What a beautiful day!",
+    "category": "adjectives",
+    "difficulty": "MEDIUM",
+    "imageUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400"
+  },
+  {
+    "english": "understand",
+    "ukrainian": "розуміти",
+    "example": "Do you understand the question?",
+    "category": "verbs",
+    "difficulty": "MEDIUM",
+    "imageUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400"
+  },
+  {
+    "english": "apple",
+    "ukrainian": "яблуко",
+    "example": "I like to eat a red apple.",
+    "category": "food",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400"
+  },
+  {
+    "english": "dog",
+    "ukrainian": "собака",
+    "example": "The dog is running in the park.",
+    "category": "animals",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400"
+  },
+  {
+    "english": "house",
+    "ukrainian": "дім",
+    "example": "My house is big and comfortable.",
+    "category": "nouns",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400"
+  },
+  {
+    "english": "sun",
+    "ukrainian": "сонце",
+    "example": "The sun is shining brightly.",
+    "category": "nature",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400"
+  },
+  {
+    "english": "car",
+    "ukrainian": "автомобіль",
+    "example": "My father bought a new car.",
+    "category": "transport",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400"
+  },
+  {
+    "english": "tree",
+    "ukrainian": "дерево",
+    "example": "A tall tree is near the river.",
+    "category": "nature",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400"
+  },
+  {
+    "english": "book",
+    "ukrainian": "книга",
+    "example": "This book is very interesting.",
+    "category": "nouns",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400"
+  },
+  {
+    "english": "chair",
+    "ukrainian": "стілець",
+    "example": "I am sitting on a chair.",
+    "category": "nouns",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400"
+  },
+  {
+    "english": "table",
+    "ukrainian": "стіл",
+    "example": "The food is on the table.",
+    "category": "nouns",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=400"
+  },
+  {
+    "english": "cat",
+    "ukrainian": "кіт",
+    "example": "The cat is sleeping on the sofa.",
+    "category": "animals",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400"
+  },
+  {
+    "english": "family",
+    "ukrainian": "сім'я",
+    "example": "My family is very important to me.",
+    "category": "nouns",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=400"
+  },
+  {
+    "english": "run",
+    "ukrainian": "бігти",
+    "example": "I like to run in the morning.",
+    "category": "verbs",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400"
+  },
+  {
+    "english": "mountain",
+    "ukrainian": "гора",
+    "example": "The mountain is very high.",
+    "category": "nature",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400"
+  },
+  {
+    "english": "delicious",
+    "ukrainian": "смачний",
+    "example": "This food is delicious!",
+    "category": "adjectives",
+    "difficulty": "MEDIUM",
+    "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400"
+  },
+  {
+    "english": "discover",
+    "ukrainian": "відкривати",
+    "example": "We need to discover new places.",
+    "category": "verbs",
+    "difficulty": "MEDIUM",
+    "imageUrl": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400"
+  }
+]

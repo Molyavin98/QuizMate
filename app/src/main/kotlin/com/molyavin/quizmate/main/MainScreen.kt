@@ -118,7 +118,7 @@ fun MainScreen() {
             }
 
             composable("folder/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 FolderDetailsScreen(
                     folderId = folderId,
                     onNavigateBack = { navController.popBackStack() },
@@ -135,7 +135,7 @@ fun MainScreen() {
             }
 
             composable("learn/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 DictionaryScreen(
                     onNavigateBack = { navController.popBackStack() },
                     folderId = folderId,
@@ -144,7 +144,7 @@ fun MainScreen() {
             }
 
             composable("flashcards/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 FlashCardsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     folderId = folderId

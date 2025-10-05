@@ -1,7 +1,6 @@
 package com.molyavin.quizmate.feature.vocabulary.presentation;
 
-import com.molyavin.quizmate.feature.vocabulary.data.local.WordDao;
-import com.molyavin.quizmate.feature.vocabulary.data.repository.VocabularyRepositoryImpl;
+import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository;
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.AddWordUseCase;
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.CreateFolderUseCase;
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.DeleteAllWordsUseCase;
@@ -55,9 +54,7 @@ public final class DictionaryViewModel_Factory implements Factory<DictionaryView
 
   private final Provider<GetWordsByFolderUseCase> getWordsByFolderUseCaseProvider;
 
-  private final Provider<WordDao> wordDaoProvider;
-
-  private final Provider<VocabularyRepositoryImpl> vocabularyRepositoryProvider;
+  private final Provider<VocabularyRepository> vocabularyRepositoryProvider;
 
   public DictionaryViewModel_Factory(Provider<GetAllWordsUseCase> getAllWordsUseCaseProvider,
       Provider<AddWordUseCase> addWordUseCaseProvider,
@@ -69,8 +66,7 @@ public final class DictionaryViewModel_Factory implements Factory<DictionaryView
       Provider<CreateFolderUseCase> createFolderUseCaseProvider,
       Provider<DeleteFolderUseCase> deleteFolderUseCaseProvider,
       Provider<GetWordsByFolderUseCase> getWordsByFolderUseCaseProvider,
-      Provider<WordDao> wordDaoProvider,
-      Provider<VocabularyRepositoryImpl> vocabularyRepositoryProvider) {
+      Provider<VocabularyRepository> vocabularyRepositoryProvider) {
     this.getAllWordsUseCaseProvider = getAllWordsUseCaseProvider;
     this.addWordUseCaseProvider = addWordUseCaseProvider;
     this.deleteWordUseCaseProvider = deleteWordUseCaseProvider;
@@ -81,13 +77,12 @@ public final class DictionaryViewModel_Factory implements Factory<DictionaryView
     this.createFolderUseCaseProvider = createFolderUseCaseProvider;
     this.deleteFolderUseCaseProvider = deleteFolderUseCaseProvider;
     this.getWordsByFolderUseCaseProvider = getWordsByFolderUseCaseProvider;
-    this.wordDaoProvider = wordDaoProvider;
     this.vocabularyRepositoryProvider = vocabularyRepositoryProvider;
   }
 
   @Override
   public DictionaryViewModel get() {
-    return newInstance(getAllWordsUseCaseProvider.get(), addWordUseCaseProvider.get(), deleteWordUseCaseProvider.get(), searchWordsUseCaseProvider.get(), importWordsFromJsonUseCaseProvider.get(), deleteAllWordsUseCaseProvider.get(), getAllFoldersUseCaseProvider.get(), createFolderUseCaseProvider.get(), deleteFolderUseCaseProvider.get(), getWordsByFolderUseCaseProvider.get(), wordDaoProvider.get(), vocabularyRepositoryProvider.get());
+    return newInstance(getAllWordsUseCaseProvider.get(), addWordUseCaseProvider.get(), deleteWordUseCaseProvider.get(), searchWordsUseCaseProvider.get(), importWordsFromJsonUseCaseProvider.get(), deleteAllWordsUseCaseProvider.get(), getAllFoldersUseCaseProvider.get(), createFolderUseCaseProvider.get(), deleteFolderUseCaseProvider.get(), getWordsByFolderUseCaseProvider.get(), vocabularyRepositoryProvider.get());
   }
 
   public static DictionaryViewModel_Factory create(
@@ -101,9 +96,8 @@ public final class DictionaryViewModel_Factory implements Factory<DictionaryView
       Provider<CreateFolderUseCase> createFolderUseCaseProvider,
       Provider<DeleteFolderUseCase> deleteFolderUseCaseProvider,
       Provider<GetWordsByFolderUseCase> getWordsByFolderUseCaseProvider,
-      Provider<WordDao> wordDaoProvider,
-      Provider<VocabularyRepositoryImpl> vocabularyRepositoryProvider) {
-    return new DictionaryViewModel_Factory(getAllWordsUseCaseProvider, addWordUseCaseProvider, deleteWordUseCaseProvider, searchWordsUseCaseProvider, importWordsFromJsonUseCaseProvider, deleteAllWordsUseCaseProvider, getAllFoldersUseCaseProvider, createFolderUseCaseProvider, deleteFolderUseCaseProvider, getWordsByFolderUseCaseProvider, wordDaoProvider, vocabularyRepositoryProvider);
+      Provider<VocabularyRepository> vocabularyRepositoryProvider) {
+    return new DictionaryViewModel_Factory(getAllWordsUseCaseProvider, addWordUseCaseProvider, deleteWordUseCaseProvider, searchWordsUseCaseProvider, importWordsFromJsonUseCaseProvider, deleteAllWordsUseCaseProvider, getAllFoldersUseCaseProvider, createFolderUseCaseProvider, deleteFolderUseCaseProvider, getWordsByFolderUseCaseProvider, vocabularyRepositoryProvider);
   }
 
   public static DictionaryViewModel newInstance(GetAllWordsUseCase getAllWordsUseCase,
@@ -111,8 +105,7 @@ public final class DictionaryViewModel_Factory implements Factory<DictionaryView
       SearchWordsUseCase searchWordsUseCase, ImportWordsFromJsonUseCase importWordsFromJsonUseCase,
       DeleteAllWordsUseCase deleteAllWordsUseCase, GetAllFoldersUseCase getAllFoldersUseCase,
       CreateFolderUseCase createFolderUseCase, DeleteFolderUseCase deleteFolderUseCase,
-      GetWordsByFolderUseCase getWordsByFolderUseCase, WordDao wordDao,
-      VocabularyRepositoryImpl vocabularyRepository) {
-    return new DictionaryViewModel(getAllWordsUseCase, addWordUseCase, deleteWordUseCase, searchWordsUseCase, importWordsFromJsonUseCase, deleteAllWordsUseCase, getAllFoldersUseCase, createFolderUseCase, deleteFolderUseCase, getWordsByFolderUseCase, wordDao, vocabularyRepository);
+      GetWordsByFolderUseCase getWordsByFolderUseCase, VocabularyRepository vocabularyRepository) {
+    return new DictionaryViewModel(getAllWordsUseCase, addWordUseCase, deleteWordUseCase, searchWordsUseCase, importWordsFromJsonUseCase, deleteAllWordsUseCase, getAllFoldersUseCase, createFolderUseCase, deleteFolderUseCase, getWordsByFolderUseCase, vocabularyRepository);
   }
 }

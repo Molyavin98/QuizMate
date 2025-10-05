@@ -87,7 +87,6 @@ import coil.compose.AsyncImage
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
 import com.molyavin.quizmate.core.ui.GradientTopAppBar
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
 import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.presentation.DictionaryContract
@@ -100,8 +99,8 @@ import java.io.InputStreamReader
 @Composable
 fun DictionaryScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToFolder: ((Long) -> Unit)? = null,
-    folderId: Long? = null,
+    onNavigateToFolder: ((String) -> Unit)? = null,
+    folderId: String? = null,
     isLearningMode: Boolean = false,
     viewModel: DictionaryViewModel = hiltViewModel()
 ) {
@@ -148,9 +147,8 @@ fun DictionaryScreen(
     LaunchedEffect(folderId) {
         if (folderId != null) {
             viewModel.handleIntent(DictionaryContract.Intent.SelectFolder(folderId))
-        } else {
-            viewModel.handleIntent(DictionaryContract.Intent.SelectFolder(null))
         }
+        // Якщо folderId == null, не робимо нічого - дозволяємо автоматичному вибору спрацювати
     }
 
     LaunchedEffect(Unit) {
@@ -626,16 +624,16 @@ private fun EmptyState() {
 @Composable
 private fun AddWordDialog(
     vocabularyFolders: List<VocabularyFolder>,
-    selectedFolderId: Long?,
+    selectedFolderId: String?,
     onDismiss: () -> Unit,
-    onAdd: (String, String, String, String, Difficulty, String, Long?) -> Unit
+    onAdd: (String, String, String, String, String, String, String?) -> Unit
 ) {
     var english by remember { mutableStateOf("") }
     var ukrainian by remember { mutableStateOf("") }
     var example by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
-    var difficulty by remember { mutableStateOf(Difficulty.MEDIUM) }
+    var difficulty by remember { mutableStateOf("MEDIUM") }
     var folderId by remember { mutableStateOf(selectedFolderId) }
     var difficultyExpanded by remember { mutableStateOf(false) }
     var folderExpanded by remember { mutableStateOf(false) }
@@ -721,9 +719,10 @@ private fun AddWordDialog(
                 ) {
                     OutlinedTextField(
                         value = when (difficulty) {
-                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                            "EASY" -> stringResource(R.string.difficulty_easy)
+                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                            "HARD" -> stringResource(R.string.difficulty_hard)
+                            else -> stringResource(R.string.difficulty_medium)
                         },
                         onValueChange = {},
                         readOnly = true,
@@ -737,14 +736,15 @@ private fun AddWordDialog(
                         expanded = difficultyExpanded,
                         onDismissRequest = { difficultyExpanded = false }
                     ) {
-                        Difficulty.entries.forEach { diff ->
+                        listOf("EASY", "MEDIUM", "HARD").forEach { diff ->
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         when (diff) {
-                                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                                            "EASY" -> stringResource(R.string.difficulty_easy)
+                                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                                            "HARD" -> stringResource(R.string.difficulty_hard)
+                                            else -> diff
                                         }
                                     )
                                 },
@@ -824,9 +824,10 @@ private fun WordDetailsDialog(
                 Text(
                     stringResource(
                         R.string.word_details_difficulty, when (word.difficulty) {
-                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                            "EASY" -> stringResource(R.string.difficulty_easy)
+                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                            "HARD" -> stringResource(R.string.difficulty_hard)
+                            else -> word.difficulty
                         }
                     ), style = MaterialTheme.typography.bodyMedium
                 )

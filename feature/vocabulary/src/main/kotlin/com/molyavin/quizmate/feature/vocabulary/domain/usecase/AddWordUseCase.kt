@@ -7,7 +7,7 @@ import javax.inject.Inject
 class AddWordUseCase @Inject constructor(
     private val repository: VocabularyRepository
 ) {
-    suspend operator fun invoke(word: Word): Result<Long> {
+    suspend operator fun invoke(word: Word): Result<String> {
         return try {
             if (word.english.isBlank()) {
                 return Result.failure(Exception("English word cannot be empty"))

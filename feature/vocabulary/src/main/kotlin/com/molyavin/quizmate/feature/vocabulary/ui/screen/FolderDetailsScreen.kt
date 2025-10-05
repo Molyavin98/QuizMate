@@ -47,11 +47,11 @@ import com.molyavin.quizmate.feature.vocabulary.presentation.FolderDetailsViewMo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FolderDetailsScreen(
-    folderId: Long?,
+    folderId: String?,
     onNavigateBack: () -> Unit,
-    onNavigateToLearn: (Long?) -> Unit,
-    onNavigateToFlashCards: (Long?) -> Unit,
-    onNavigateToQuiz: (Long?) -> Unit,
+    onNavigateToLearn: (String?) -> Unit,
+    onNavigateToFlashCards: (String?) -> Unit,
+    onNavigateToQuiz: (String?) -> Unit,
     viewModel: FolderDetailsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

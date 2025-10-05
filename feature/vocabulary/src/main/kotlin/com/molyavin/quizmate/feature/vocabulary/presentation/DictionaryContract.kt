@@ -1,6 +1,5 @@
 package com.molyavin.quizmate.feature.vocabulary.presentation
 
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
 import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 
@@ -12,7 +11,7 @@ object DictionaryContract {
     data class State(
         val words: List<Word> = emptyList(),
         val vocabularyFolders: List<VocabularyFolder> = emptyList(),
-        val selectedFolderId: Long? = null,
+        val selectedFolderId: String? = null,
         val isLoading: Boolean = false,
         val isImporting: Boolean = false,
         val searchQuery: String = "",
@@ -42,23 +41,23 @@ object DictionaryContract {
             val ukrainian: String,
             val example: String,
             val category: String,
-            val difficulty: Difficulty,
+            val difficulty: String,
             val imageUrl: String,
-            val folderId: Long? = null
+            val folderId: String? = null
         ) : Intent
         data class DeleteWord(val word: Word) : Intent
         data class SelectWord(val word: Word) : Intent
         data object DismissWordDetails : Intent
-        data class ImportFromJson(val jsonContent: String, val folderId: Long? = null) : Intent
+        data class ImportFromJson(val jsonContent: String, val folderId: String? = null) : Intent
         data object DeleteAllWords : Intent
-        data class ToggleFavorite(val wordId: Long) : Intent
+        data class ToggleFavorite(val wordId: String) : Intent
 
         // Folder actions
-        data class SelectFolder(val folderId: Long?) : Intent
+        data class SelectFolder(val folderId: String?) : Intent
         data object ShowAddFolderDialog : Intent
         data object HideAddFolderDialog : Intent
         data class CreateFolder(val name: String) : Intent
-        data class DeleteFolder(val folderId: Long) : Intent
+        data class DeleteFolder(val folderId: String) : Intent
     }
 
     sealed interface Effect {

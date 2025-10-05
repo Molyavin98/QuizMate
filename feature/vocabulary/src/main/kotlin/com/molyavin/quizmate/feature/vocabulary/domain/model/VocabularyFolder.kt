@@ -1,10 +1,8 @@
 package com.molyavin.quizmate.feature.vocabulary.domain.model
 
-import java.util.Date
-
 data class VocabularyFolder(
-    val id: Long = 0,
+    val id: String = "",
     val name: String,
-    val createdAt: Date = Date(),
+    val createdAt: Long = System.currentTimeMillis(),
     val wordCount: Int = 0
 )

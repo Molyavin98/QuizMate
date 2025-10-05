@@ -15,7 +15,7 @@ interface FlashCardsRepository {
     /**
      * Отримати картки по папці
      */
-    fun getCardsByFolder(folderId: Long): Flow<List<FlashCard>>
+    fun getCardsByFolder(folderId: String): Flow<List<FlashCard>>
 
     /**
      * Отримати картки по категорії
