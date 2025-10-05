@@ -1,6 +1,6 @@
 package com.molyavin.quizmate.feature.vocabulary.domain.repository
 
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import kotlinx.coroutines.flow.Flow
 
@@ -74,7 +74,7 @@ interface VocabularyRepository {
     /**
      * Отримати всі папки
      */
-    fun getAllFolders(): Flow<List<Folder>>
+    fun getAllFolders(): Flow<List<VocabularyFolder>>
 
     /**
      * Створити нову папку

@@ -124,7 +124,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(GridSpacing.Horizontal),
                     verticalArrangement = Arrangement.spacedBy(GridSpacing.Vertical)
                 ) {
-                    items(state.folders) { folder ->
+                    items(state.vocabularyFolders) { folder ->
                         FolderCard(
                             name = folder.name,
                             wordCount = folder.wordCount,

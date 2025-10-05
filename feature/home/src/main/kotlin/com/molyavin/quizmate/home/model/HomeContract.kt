@@ -1,9 +1,9 @@
 package com.molyavin.quizmate.home.model
 
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 
 data class HomeState(
-    val folders: List<Folder> = emptyList(),
+    val vocabularyFolders: List<VocabularyFolder> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )

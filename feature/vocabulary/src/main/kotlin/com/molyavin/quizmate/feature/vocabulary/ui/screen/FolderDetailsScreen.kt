@@ -56,7 +56,7 @@ fun FolderDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val currentFolder = state.folders.find { it.id == folderId }
+    val currentFolder = state.vocabularyFolders.find { it.id == folderId }
 
     Scaffold(
         modifier = Modifier

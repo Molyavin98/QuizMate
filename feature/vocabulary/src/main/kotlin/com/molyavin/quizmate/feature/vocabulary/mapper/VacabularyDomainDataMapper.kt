@@ -2,10 +2,10 @@ package com.molyavin.quizmate.feature.vocabulary.mapper
 
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderEntity
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordEntity
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 
-fun Folder.toEntity(): VocabularyFolderEntity {
+fun VocabularyFolder.toEntity(): VocabularyFolderEntity {
     return VocabularyFolderEntity(
         id = id,
         name = name,
