@@ -4,12 +4,12 @@ import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderEntit
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderWithWordCountEntity
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordEntity
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import java.util.Date
 
-fun VocabularyFolderEntity.toDomain(wordCount: Int = 0): Folder {
-    return Folder(
+fun VocabularyFolderEntity.toDomain(wordCount: Int = 0): VocabularyFolder {
+    return VocabularyFolder(
         id = id,
         name = name,
         createdAt = Date(createdAt),
@@ -17,8 +17,8 @@ fun VocabularyFolderEntity.toDomain(wordCount: Int = 0): Folder {
     )
 }
 
-fun VocabularyFolderWithWordCountEntity.toDomain(): Folder {
-    return Folder(
+fun VocabularyFolderWithWordCountEntity.toDomain(): VocabularyFolder {
+    return VocabularyFolder(
         id = id,
         name = name,
         createdAt = Date(createdAt),

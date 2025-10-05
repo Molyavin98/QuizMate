@@ -3,7 +3,7 @@ package com.molyavin.quizmate.feature.vocabulary.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllFoldersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +43,7 @@ class FolderDetailsViewModel @Inject constructor(
                 .collect { folders ->
                     _state.update {
                         it.copy(
-                            folders = folders,
+                            vocabularyFolders = folders,
                             isLoading = false,
                             error = null
                         )
@@ -54,7 +54,7 @@ class FolderDetailsViewModel @Inject constructor(
 }
 
 data class FolderDetailsState(
-    val folders: List<Folder> = emptyList(),
+    val vocabularyFolders: List<VocabularyFolder> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )

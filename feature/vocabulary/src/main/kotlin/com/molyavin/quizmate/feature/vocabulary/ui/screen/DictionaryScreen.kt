@@ -88,7 +88,7 @@ import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
 import com.molyavin.quizmate.core.ui.GradientTopAppBar
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.presentation.DictionaryContract
 import com.molyavin.quizmate.feature.vocabulary.presentation.DictionaryViewModel
@@ -276,7 +276,7 @@ fun DictionaryScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.folders) { folder ->
+                    items(state.vocabularyFolders) { folder ->
                         var showDeleteDialog by remember { mutableStateOf(false) }
 
                         FilterChip(
@@ -424,7 +424,7 @@ fun DictionaryScreen(
 
         if (state.showAddDialog) {
             AddWordDialog(
-                folders = state.folders,
+                vocabularyFolders = state.vocabularyFolders,
                 selectedFolderId = state.selectedFolderId,
                 onDismiss = { viewModel.handleIntent(DictionaryContract.Intent.HideAddDialog) },
                 onAdd = { english, ukrainian, example, category, difficulty, imageUrl, folderId ->
@@ -625,7 +625,7 @@ private fun EmptyState() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddWordDialog(
-    folders: List<Folder>,
+    vocabularyFolders: List<VocabularyFolder>,
     selectedFolderId: Long?,
     onDismiss: () -> Unit,
     onAdd: (String, String, String, String, Difficulty, String, Long?) -> Unit
@@ -682,7 +682,7 @@ private fun AddWordDialog(
                     onExpandedChange = { folderExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = folderId?.let { id -> folders.find { it.id == id }?.name }
+                        value = folderId?.let { id -> vocabularyFolders.find { it.id == id }?.name }
                             ?: stringResource(R.string.add_word_no_folder),
                         onValueChange = {},
                         readOnly = true,
@@ -703,7 +703,7 @@ private fun AddWordDialog(
                                 folderExpanded = false
                             }
                         )
-                        folders.forEach { folder ->
+                        vocabularyFolders.forEach { folder ->
                             DropdownMenuItem(
                                 text = { Text(folder.name) },
                                 onClick = {

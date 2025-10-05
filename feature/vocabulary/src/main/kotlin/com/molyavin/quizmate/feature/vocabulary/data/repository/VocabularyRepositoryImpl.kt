@@ -7,7 +7,7 @@ import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderEntit
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordDao
 import com.molyavin.quizmate.feature.vocabulary.data.remote.model.VocabularyFolderDto
 import com.molyavin.quizmate.feature.vocabulary.data.remote.model.VocabularyWordDto
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import com.molyavin.quizmate.feature.vocabulary.mapper.toDomain
@@ -342,7 +342,7 @@ class VocabularyRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllFolders(): Flow<List<Folder>> {
+    override fun getAllFolders(): Flow<List<VocabularyFolder>> {
         return vocabularyFolderDao.getAllFoldersWithWordCount().map { foldersWithCount ->
             foldersWithCount.map { it.toDomain() }
         }

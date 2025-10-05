@@ -242,10 +242,10 @@ class DictionaryViewModel @Inject constructor(
                     // Якщо папки завантажилися вперше і є хоча б одна папка
                     if (currentSelectedId == null && folders.isNotEmpty()) {
                         // Автоматично обрати першу папку
-                        _state.update { it.copy(folders = folders, selectedFolderId = folders.first().id) }
+                        _state.update { it.copy(vocabularyFolders = folders, selectedFolderId = folders.first().id) }
                         loadWordsByFolder(folders.first().id)
                     } else {
-                        _state.update { it.copy(folders = folders) }
+                        _state.update { it.copy(vocabularyFolders = folders) }
                     }
                 }
         }
@@ -291,7 +291,7 @@ class DictionaryViewModel @Inject constructor(
 
     private fun createFolder(name: String) {
         viewModelScope.launch {
-            val hadFolders = _state.value.folders.isNotEmpty()
+            val hadFolders = _state.value.vocabularyFolders.isNotEmpty()
             val result = createFolderUseCase(name)
 
             result.onSuccess { newFolderId ->
@@ -320,7 +320,7 @@ class DictionaryViewModel @Inject constructor(
 
                 // Якщо видалили обрану папку
                 if (_state.value.selectedFolderId == folderId) {
-                    val remainingFolders = _state.value.folders.filter { it.id != folderId }
+                    val remainingFolders = _state.value.vocabularyFolders.filter { it.id != folderId }
                     if (remainingFolders.isNotEmpty()) {
                         // Обрати першу папку зі залишених
                         selectFolder(remainingFolders.first().id)

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.molyavin.quizmate.home.model.HomeEffect
 import com.molyavin.quizmate.home.model.HomeIntent
 import com.molyavin.quizmate.home.model.HomeState
-import com.molyavin.quizmate.feature.vocabulary.data.repository.VocabularyRepositoryImpl
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllFoldersUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.VocabularySyncFromFirestoreUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,7 +68,7 @@ class HomeViewModel @Inject constructor(
                 .collect { folders ->
                     _state.update {
                         it.copy(
-                            folders = folders,
+                            vocabularyFolders = folders,
                             isLoading = false,
                             error = null
                         )

@@ -1,7 +1,7 @@
 package com.molyavin.quizmate.feature.vocabulary.presentation
 
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Folder
+import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 
 /**
@@ -11,7 +11,7 @@ object DictionaryContract {
 
     data class State(
         val words: List<Word> = emptyList(),
-        val folders: List<Folder> = emptyList(),
+        val vocabularyFolders: List<VocabularyFolder> = emptyList(),
         val selectedFolderId: Long? = null,
         val isLoading: Boolean = false,
         val isImporting: Boolean = false,
