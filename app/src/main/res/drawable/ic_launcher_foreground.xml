@@ -1,0 +1,114 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- === Rounded gradient background === -->
+    <path
+        android:name="bg"
+        android:pathData="M12,12
+                          h84
+                          a12,12 0 0 1 12,12
+                          v60
+                          a12,12 0 0 1 -12,12
+                          h-84
+                          a12,12 0 0 1 -12,-12
+                          v-60
+                          a12,12 0 0 1 12,-12 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108">
+                <!-- #40C9FF -> #E81CFF -->
+                <item android:offset="0.0" android:color="#FF40C9FF"/>
+                <item android:offset="1.0" android:color="#FFE81CFF"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Трохи «довгої» тіні від бульбашок (м'яка) -->
+    <group android:translateX="6" android:translateY="6" android:scaleX="1" android:scaleY="1" android:rotation="0">
+        <path
+            android:fillColor="#14000000"
+            android:pathData="M66,36
+                              a12,12 0 0 1 12,12
+                              v20
+                              a12,12 0 0 1 -12,12
+                              h-14
+                              l-8,6
+                              v-6
+                              h-12
+                              a12,12 0 0 1 -12,-12
+                              v-24
+                              a12,12 0 0 1 12,-12
+                              z"/>
+    </group>
+
+    <!-- === Back bubble: white with 'A' (правіше/нижче) === -->
+    <group android:translateX="50" android:translateY="40">
+        <!-- body -->
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M0,0
+                              h28
+                              a8,8 0 0 1 8,8
+                              v18
+                              a8,8 0 0 1 -8,8
+                              h-10
+                              v8
+                              l-10,-8
+                              h-8
+                              a8,8 0 0 1 -8,-8
+                              v-18
+                              a8,8 0 0 1 8,-8
+                              z"/>
+        <!-- 'A' (темно-фіолетова) -->
+        <path
+            android:fillColor="#E81CFF"
+            android:pathData="
+                M12,24 L16,12 L20,24 Z
+                M13.5,20 L18.5,20 L17.6,22.5 L14.4,22.5 Z"/>
+    </group>
+
+    <!-- === Front bubble: blue with 'Q' (зліва/вище) === -->
+    <group android:translateX="22" android:translateY="28">
+        <!-- body -->
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M0,0
+                              h34
+                              a10,10 0 0 1 10,10
+                              v22
+                              a10,10 0 0 1 -10,10
+                              h-12
+                              l-10,8
+                              v-8
+                              h-12
+                              a10,10 0 0 1 -10,-10
+                              v-22
+                              a10,10 0 0 1 10,-10
+                              z"/>
+
+        <!-- 'Q' (синя) — контур круга + «хвостик» -->
+        <!-- Зовнішнє кільце Q -->
+        <path
+            android:fillColor="#40C9FF"
+            android:pathData="M17,8
+                              a10,10 0 1 1 0,20
+                              a10,10 0 1 1 0,-20
+                              M17,12
+                              a6,6 0 1 0 0,12
+                              a6,6 0 1 0 0,-12"
+            android:fillType="evenOdd"/>
+        <!-- «хвостик» Q -->
+        <path
+            android:fillColor="#40C9FF"
+            android:pathData="M22.2,21.8 L25.5,25.1 L23.6,26.9 L20.3,23.6 Z"/>
+    </group>
+
+</vector>

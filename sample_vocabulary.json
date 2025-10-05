@@ -1,0 +1,76 @@
+[
+  {
+    "english": "hello",
+    "ukrainian": "привіт",
+    "example": "Hello, how are you?",
+    "category": "greetings",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1502759683299-cdcd6974244f?w=400"
+  },
+  {
+    "english": "goodbye",
+    "ukrainian": "до побачення",
+    "example": "Goodbye, see you later!",
+    "category": "greetings",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1502764613149-7f1d229e230f?w=400"
+  },
+  {
+    "english": "computer",
+    "ukrainian": "комп'ютер",
+    "example": "I work on a computer every day.",
+    "category": "technology",
+    "difficulty": "EASY",
+    "imageUrl": "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400"
+  },
+  {
+    "english": "beautiful",
+    "ukrainian": "красивий",
+    "example": "What a beautiful day!",
+    "category": "adjectives",
+    "difficulty": "MEDIUM",
+    "imageUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400"
+  },
+  {
+    "english": "understand",
+    "ukrainian": "розуміти",
+    "example": "Do you understand the question?",
+    "category": "verbs",
+    "difficulty": "MEDIUM"
+  },
+  {
+    "english": "experience",
+    "ukrainian": "досвід",
+    "example": "I have 5 years of experience.",
+    "category": "nouns",
+    "difficulty": "MEDIUM"
+  },
+  {
+    "english": "appreciate",
+    "ukrainian": "цінувати",
+    "example": "I really appreciate your help.",
+    "category": "verbs",
+    "difficulty": "HARD"
+  },
+  {
+    "english": "accomplish",
+    "ukrainian": "досягати",
+    "example": "We accomplished our goals.",
+    "category": "verbs",
+    "difficulty": "HARD"
+  },
+  {
+    "english": "knowledge",
+    "ukrainian": "знання",
+    "example": "Knowledge is power.",
+    "category": "nouns",
+    "difficulty": "MEDIUM"
+  },
+  {
+    "english": "remember",
+    "ukrainian": "пам'ятати",
+    "example": "Do you remember me?",
+    "category": "verbs",
+    "difficulty": "EASY"
+  }
+]
