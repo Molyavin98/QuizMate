@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthRegisterViewModel @Inject constructor(
-    private val authSignUpWithEmailUseCase: AuthSignUpWithEmailUseCase
+    private val authSignUpWithEmailUseCase: AuthSignUpWithEmailUseCase,
+    private val authSignInWithGoogleUseCase: com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignInWithGoogleUseCase
 ) : ViewModel() {
 
     private val _authStateModel = MutableStateFlow(AuthStateModel())
@@ -49,10 +50,35 @@ class AuthRegisterViewModel @Inject constructor(
                     _authEffect.send(AuthEffect.NavigateToLogin)
                 }
             }
+            is AuthIntent.SignInWithGoogle -> {
+                // Google Sign-In буде оброблятися через Activity
+                viewModelScope.launch {
+                    _authEffect.send(AuthEffect.ShowError("Використовуйте Google Sign-In через екран входу"))
+                }
+            }
             is AuthIntent.DismissError -> {
                 _authStateModel.update { it.copy(error = null) }
             }
             else -> {}
+        }
+    }
+
+    fun handleGoogleSignIn(idToken: String) {
+        viewModelScope.launch {
+            _authStateModel.update { it.copy(isLoading = true, error = null) }
+
+            when (val result = authSignInWithGoogleUseCase(idToken)) {
+                is AuthResult.Success -> {
+                    _authStateModel.update { it.copy(isLoading = false) }
+                    _authEffect.send(AuthEffect.ShowSuccess("Реєстрація через Google успішна!"))
+                    _authEffect.send(AuthEffect.NavigateToHome)
+                }
+                is AuthResult.Error -> {
+                    _authStateModel.update {
+                        it.copy(isLoading = false, error = result.message)
+                    }
+                }
+            }
         }
     }
 

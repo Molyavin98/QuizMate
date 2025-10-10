@@ -12,7 +12,28 @@
           "package_name": "com.molyavin.quizmate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "539601660103-1fmlppjc2igcn8mpcrbag10nlnp37jce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.molyavin.quizmate",
+            "certificate_hash": "b022427e9444c4c9b5f28a22be99127f19b27bd9"
+          }
+        },
+        {
+          "client_id": "539601660103-laffbil23f9ic393uq9qb7bb5halrc4f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.molyavin.quizmate",
+            "certificate_hash": "cabe134a15e7291657d364c075e903373bae7b87"
+          }
+        },
+        {
+          "client_id": "539601660103-f6a223rm838v8blglq192lf86hccgm79.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyADpeD2H_AewCfGilKjW5cuHQm9whnRkFw"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "539601660103-f6a223rm838v8blglq192lf86hccgm79.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

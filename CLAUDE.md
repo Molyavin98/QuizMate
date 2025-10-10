@@ -22,15 +22,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Data Layer**: Repository Implementations, Room Database, Data Sources
 
 **Модульная структура:**
-- `app` - главный модуль приложения, навигация
-- `core` - общие компоненты, тема, утилиты, DI модули
+- `app` - главный модуль приложения, навигация, Firebase integration
+- `core` - общие компоненты, тема, утилиты, DI модули, network
 - `feature` - модуль с feature-модулями:
+  - `feature:auth` - аутентификация (Email/Password, Google Sign-In)
   - `feature:home` - домашний экран со списком последних папок
   - `feature:vocabulary` - модуль словаря и управления словами/папками
   - `feature:flashcards` - модуль flash cards (Quizlet-style)
   - `feature:quiz` - модуль квизов
   - `feature:splash` - splash screen при запуске
   - `feature:favorites` - избранные слова
+  - `feature:settings` - профиль пользователя, настройки темы и языка
 
 ## Tech Stack
 
@@ -63,9 +65,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - OkHttp 4.12.0
 - Gson (JSON parsing)
 
+**Authentication & Backend:**
+- Firebase BOM 33.8.0
+- Firebase Authentication (Email/Password, Google Sign-In)
+- Firebase Firestore
+- Firebase Analytics
+- Google Play Services Auth 21.2.0
+
 **Other:**
 - DataStore Preferences 1.1.1
 - Timber 5.0.1 (logging)
+- WorkManager 2.10.0
 
 ## Project Structure
 
@@ -246,18 +256,46 @@ apply(from = "$rootDir/gradle/feature-module.gradle")
 - Image support (Unsplash URLs)
 - JSON import with duplicate detection
 
-### 3. Navigation
-- Bottom Navigation Bar: Home / Create / Library
+### 3. Authentication & User Management
+- **Firebase Authentication** with Email/Password and Google Sign-In
+- **MainActivity** проверяет auth state при запуске:
+  - `AuthState.Authenticated` → navigate to "main"
+  - `AuthState.Unauthenticated` → navigate to "login"
+- **Auth Flow**:
+  - LoginScreen → Email/Password or Google Sign-In → MainScreen
+  - RegisterScreen → Email/Password registration → MainScreen
+  - ProfileScreen → Theme settings, Language settings, Sign Out, Delete Account
+- **Clean Architecture** в auth модуле:
+  - `domain/`: User, AuthState, AuthResult models + AuthRepository interface + 6 use cases
+  - `data/`: FirebaseAuthDataSource + AuthRepositoryImpl
+  - `presentation/`: AuthContract (MVI) + AuthLoginViewModel + AuthRegisterViewModel
+  - `ui/`: LoginScreen, RegisterScreen
+- **Settings Module**:
+  - Theme: Light, Dark, System (persisted in DataStore)
+  - Language: Ukrainian, English (uses Android locale system)
+  - User profile display with avatar
+
+### 4. Navigation
+- **Dual NavHost Architecture**:
+  - `MainActivity`: Auth-level navigation (login/register/main)
+  - `MainScreen`: App-level navigation with bottom bar
+- **Bottom Navigation Bar**: Home / Create / Library
 - Create button opens BottomSheet for folder creation
 - Folder details with 3 learning modes: Learn Words, Flash Cards, Quiz
-- Routes:
-  - `home` - HomeScreen
-  - `library` - DictionaryScreen (Library mode)
-  - `folder/{folderId}` - FolderDetailsScreen
-  - `learn/{folderId}` - DictionaryScreen (Learning mode)
-  - `flashcards/{folderId}` - FlashCardsScreen
-  - `quiz/{folderId}` - QuizScreen
-  - `favorites` - FavoritesScreen
+- **Routes**:
+  - Auth routes (MainActivity level):
+    - `login` - LoginScreen
+    - `register` - RegisterScreen
+    - `main` - MainScreen (requires authentication)
+  - App routes (MainScreen level):
+    - `home` - HomeScreen
+    - `library` - DictionaryScreen (Library mode)
+    - `folder/{folderId}` - FolderDetailsScreen
+    - `learn/{folderId}` - DictionaryScreen (Learning mode)
+    - `flashcards/{folderId}` - FlashCardsScreen
+    - `quiz/{folderId}` - QuizScreen
+    - `favorites` - FavoritesScreen
+    - `profile` - ProfileScreen (settings)
 
 ### 4. Database Schema (Room)
 ```kotlin

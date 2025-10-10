@@ -52,7 +52,8 @@ class AuthLoginViewModel @Inject constructor(
                 signInWithEmail()
             }
             is AuthIntent.SignInWithGoogle -> {
-                // Google Sign-In буде реалізовано пізніше
+                // Google Sign-In обробляється через Activity callback
+                // Це лише placeholder для UI взаємодії
             }
             is AuthIntent.NavigateToRegister -> {
                 viewModelScope.launch {
@@ -66,6 +67,24 @@ class AuthLoginViewModel @Inject constructor(
                 _authStateModel.update { it.copy(error = null) }
             }
             else -> {}
+        }
+    }
+
+    fun handleGoogleSignIn(idToken: String) {
+        viewModelScope.launch {
+            _authStateModel.update { it.copy(isLoading = true, error = null) }
+
+            when (val result = authSignInWithGoogleUseCase(idToken)) {
+                is AuthResult.Success -> {
+                    _authStateModel.update { it.copy(isLoading = false) }
+                    _authEffect.send(AuthEffect.NavigateToHome)
+                }
+                is AuthResult.Error -> {
+                    _authStateModel.update {
+                        it.copy(isLoading = false, error = result.message)
+                    }
+                }
+            }
         }
     }
 

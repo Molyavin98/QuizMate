@@ -31,8 +31,6 @@ import com.molyavin.quizmate.quiz.ui.QuizScreen
 import com.molyavin.quizmate.feature.vocabulary.ui.screen.DictionaryScreen
 import com.molyavin.quizmate.feature.vocabulary.ui.screen.FolderDetailsScreen
 import com.molyavin.quizmate.favorites.presentation.ui.FavoritesScreen
-import com.molyavin.quizmate.feature.auth.presentation.ui.login.LoginScreen
-import com.molyavin.quizmate.feature.auth.presentation.ui.register.RegisterScreen
 import com.molyavin.quizmate.feature.settings.ui.ProfileScreen
 
 /**
@@ -191,28 +189,6 @@ fun MainScreen() {
                     },
                     onNavigateToQuiz = {
                         navController.navigate("quiz/favorites")
-                    }
-                )
-            }
-
-            composable("login") {
-                LoginScreen(
-                    onNavigateToRegister = { navController.navigate("register") },
-                    onNavigateToHome = {
-                        navController.navigate(BottomNavItem.Home.route) {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    }
-                )
-            }
-
-            composable("register") {
-                RegisterScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToHome = {
-                        navController.navigate(BottomNavItem.Home.route) {
-                            popUpTo("register") { inclusive = true }
-                        }
                     }
                 )
             }
