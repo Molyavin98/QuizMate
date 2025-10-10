@@ -25,7 +25,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -41,7 +42,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -57,7 +59,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -73,7 +76,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -89,7 +93,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }

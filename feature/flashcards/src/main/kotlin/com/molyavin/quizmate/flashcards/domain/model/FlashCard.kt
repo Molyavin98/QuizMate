@@ -11,7 +11,8 @@ data class FlashCard(
     val category: String? = null,
     val difficulty: String = "MEDIUM",
     val imageUrl: String? = null,
-    val isFlipped: Boolean = false
+    val isFlipped: Boolean = false,
+    val isFavorite: Boolean = false
 )
 
 /**

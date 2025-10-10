@@ -147,15 +147,15 @@ class VocabularyRepositoryImpl @Inject constructor(
 
         val dto = VocabularyWordDto.fromDomain(word, firebaseAuth.currentUser!!.uid)
         val savedDto = firestoreDataSource.saveWord(dto).getOrElse { error ->
-            Timber.e(error, "Failed to update word")
-            throw error
+            throw Exception("Failed to update word")
         }
 
-        // Оновити кеш
         val savedWord = savedDto.toDomain()
-        wordsCache.value = wordsCache.value.map {
+        val updatedList = wordsCache.value.map {
             if (it.id == savedWord.id) savedWord else it
         }
+
+        wordsCache.compareAndSet(wordsCache.value, updatedList)
     }
 
     override suspend fun deleteWord(word: Word) {

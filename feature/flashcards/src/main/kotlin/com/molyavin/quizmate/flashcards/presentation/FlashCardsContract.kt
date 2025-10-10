@@ -26,6 +26,7 @@ object FlashCardsContract {
         data object ToggleLanguageDirection : Intent
         data object RestartSession : Intent
         data object DismissSessionComplete : Intent
+        data class ToggleFavorite(val wordId: String) : Intent
     }
 
     sealed interface Effect {

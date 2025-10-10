@@ -131,6 +131,7 @@ fun FlashCardsScreen(
                                 onFlip = { viewModel.handleIntent(FlashCardsContract.Intent.FlipCard) },
                                 onSwipeLeft = { viewModel.handleIntent(FlashCardsContract.Intent.MarkAsUnknown) },
                                 onSwipeRight = { viewModel.handleIntent(FlashCardsContract.Intent.MarkAsKnown) },
+                                onToggleFavorite = { viewModel.handleIntent(FlashCardsContract.Intent.ToggleFavorite(card.id)) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f)
@@ -216,6 +217,7 @@ private fun FlashCardView(
     onFlip: () -> Unit,
     onSwipeLeft: () -> Unit,
     onSwipeRight: () -> Unit,
+    onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -264,40 +266,58 @@ private fun FlashCardView(
                     rotationY = rotation
                     cameraDistance = 12f * density
                 },
-            elevation = CardDefaults.cardElevation(8.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White.copy(alpha = 0.3f)
+                containerColor = Color.White.copy(alpha = 0.2f)
             )
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-                    .graphicsLayer {
-                        rotationY = if (rotation > 90f) 180f else 0f
-                    },
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize()
             ) {
-                if (rotation < 90f) {
-                    // Front side
-                    FrontSide(
-                        text = if (showEnglishFirst) card.frontText else card.backText,
-                        imageUrl = if (showEnglishFirst) card.imageUrl else null,
-                        onClick = onFlip
-                    )
-                } else {
-                    // Back side
-                    BackSide(
-                        text = if (showEnglishFirst) card.backText else card.frontText,
-                        example = card.example,
-                        category = card.category,
-                        onClick = onFlip
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .graphicsLayer {
+                            rotationY = if (rotation > 90f) 180f else 0f
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (rotation < 90f) {
+                        FrontSide(
+                            text = if (showEnglishFirst) card.frontText else card.backText,
+                            imageUrl = if (showEnglishFirst) card.imageUrl else null,
+                            onClick = onFlip
+                        )
+                    } else {
+                        BackSide(
+                            text = if (showEnglishFirst) card.backText else card.frontText,
+                            example = card.example,
+                            category = card.category,
+                            onClick = onFlip
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onToggleFavorite,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .graphicsLayer {
+                            rotationY = if (rotation > 90f) 180f else 0f
+                        }
+                ) {
+                    Icon(
+                        imageVector = if (card.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = if (card.isFavorite) "Remove from favorites" else "Add to favorites",
+                        tint = if (card.isFavorite) Color(0xFFFFD700) else Color.White,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
         }
 
-        // Swipe indicators
+
         if (offsetX < -50) {
             SwipeIndicator(
                 text = stringResource(R.string.flashcards_swipe_dont_know),

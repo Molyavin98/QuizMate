@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FlashCardsViewModel @Inject constructor(
-    private val getFlashCardsUseCase: GetFlashCardsUseCase
+    private val getFlashCardsUseCase: GetFlashCardsUseCase,
+    private val vocabularyRepository: com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FlashCardsContract.State())
@@ -45,6 +46,7 @@ class FlashCardsViewModel @Inject constructor(
             is FlashCardsContract.Intent.ToggleLanguageDirection -> toggleLanguageDirection()
             is FlashCardsContract.Intent.RestartSession -> restartSession()
             is FlashCardsContract.Intent.DismissSessionComplete -> dismissSessionComplete()
+            is FlashCardsContract.Intent.ToggleFavorite -> toggleFavorite(intent.wordId)
         }
     }
 
@@ -238,4 +240,38 @@ class FlashCardsViewModel @Inject constructor(
     private fun dismissSessionComplete() {
         _state.update { it.copy(showSessionComplete = false) }
     }
+
+    private fun toggleFavorite(wordId: String) {
+        val currentState = _state.value
+        val currentIndex = currentState.session.currentIndex
+
+        viewModelScope.launch {
+            try {
+                val word = vocabularyRepository.getWordById(wordId)
+                if (word != null) {
+                    _state.update { state ->
+                        state.copy(
+                            session = state.session.copy(
+                                currentIndex = currentIndex,
+                                cards = state.session.cards.map { card ->
+                                    if (card.id == wordId) card.copy(isFavorite = !card.isFavorite)
+                                    else card
+                                },
+                                knownCards = currentState.session.knownCards,
+                                unknownCards = currentState.session.unknownCards
+                            )
+                        )
+                    }
+
+                    vocabularyRepository.updateWord(word.copy(isFavorite = !word.isFavorite))
+                }
+            } catch (e: Exception) {
+                _effect.send(FlashCardsContract.Effect.ShowError("Failed to update favorite: ${e.message}"))
+            }
+        }
+    }
+
+
+
+
 }
