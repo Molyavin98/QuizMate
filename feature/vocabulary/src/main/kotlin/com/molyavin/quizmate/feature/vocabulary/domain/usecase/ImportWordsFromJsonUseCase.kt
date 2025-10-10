@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
 /**
  * Use Case для імпорту слів з JSON файлу
@@ -22,7 +21,7 @@ import javax.inject.Inject
  *   }
  * ]
  */
-class ImportWordsFromJsonUseCase @Inject constructor(
+class ImportWordsFromJsonUseCase(
     private val repository: VocabularyRepository,
     private val gson: Gson
 ) {

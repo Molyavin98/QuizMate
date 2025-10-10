@@ -2,13 +2,12 @@ package com.molyavin.quizmate.quiz.domain
 
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import javax.inject.Inject
 import kotlin.random.Random
 
 /**
  * Use Case для генерації тесту з словника
  */
-class GenerateQuizUseCase @Inject constructor(
+class GenerateQuizUseCase(
     private val vocabularyRepository: VocabularyRepository
 ) {
     suspend operator fun invoke(count: Int = 10, folderId: String? = null): Result<List<QuizQuestion>> {

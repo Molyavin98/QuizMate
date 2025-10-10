@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
@@ -52,7 +52,7 @@ fun FolderDetailsScreen(
     onNavigateToLearn: (String?) -> Unit,
     onNavigateToFlashCards: (String?) -> Unit,
     onNavigateToQuiz: (String?) -> Unit,
-    viewModel: FolderDetailsViewModel = hiltViewModel()
+    viewModel: FolderDetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

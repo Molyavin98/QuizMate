@@ -8,20 +8,16 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.molyavin.quizmate.feature.settings.domain.model.AppLanguage
 import com.molyavin.quizmate.feature.settings.domain.model.AppTheme
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 /**
  * DataStore для збереження налаштувань
  */
-@Singleton
-class SettingsDataStore @Inject constructor(
-    @ApplicationContext private val context: Context
+class SettingsDataStore(
+    private val context: Context
 ) {
     private val dataStore = context.settingsDataStore
 

@@ -3,12 +3,11 @@ package com.molyavin.quizmate.flashcards.domain.usecase
 import com.molyavin.quizmate.flashcards.domain.model.FlashCard
 import com.molyavin.quizmate.flashcards.domain.repository.FlashCardsRepository
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 /**
  * Use case для отримання flash cards
  */
-class GetFlashCardsUseCase @Inject constructor(
+class GetFlashCardsUseCase(
     private val repository: FlashCardsRepository
 ) {
     operator fun invoke(folderId: String? = null): Flow<List<FlashCard>> {

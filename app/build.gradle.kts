@@ -101,8 +101,4 @@ dependencies {
     // Google Sign-In
     implementation(libs.play.services.auth)
 
-    // Koin DI
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-    implementation(libs.koin.compose.viewmodel)
 }

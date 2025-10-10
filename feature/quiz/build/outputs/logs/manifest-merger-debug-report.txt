@@ -1,16 +1,16 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml:2:13-83
-INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml:2:13-83
+ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml:2:13-83
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml:2:13-83
 	package
-		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml
 	xmlns:android
-		ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml:2:23-81
+		ADDED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml:2:23-81
 uses-sdk
-INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml reason: use-sdk injection requested
-INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml
-INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml reason: use-sdk injection requested
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml
+INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml
 	android:targetSdkVersion
-		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml
 	android:minSdkVersion
-		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest9323675811037308369.xml
+		INJECTED from /Users/molyavin/AndroidStudioProjects/QuizMate/feature/quiz/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest5499064595409199472.xml

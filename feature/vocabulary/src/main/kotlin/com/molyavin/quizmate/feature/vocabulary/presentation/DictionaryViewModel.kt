@@ -8,7 +8,6 @@ import com.molyavin.quizmate.feature.vocabulary.domain.usecase.DeleteWordUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllWordsUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.SearchWordsUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,10 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class DictionaryViewModel @Inject constructor(
+class DictionaryViewModel(
     private val getAllWordsUseCase: GetAllWordsUseCase,
     private val addWordUseCase: AddWordUseCase,
     private val deleteWordUseCase: DeleteWordUseCase,

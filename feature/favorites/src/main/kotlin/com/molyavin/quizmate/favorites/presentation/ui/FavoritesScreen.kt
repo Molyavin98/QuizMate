@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import coil.compose.AsyncImage
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.GradientBrushHorizontal
@@ -32,7 +32,7 @@ fun FavoritesScreen(
     onNavigateBack: () -> Unit,
     onNavigateToFlashCards: () -> Unit = {},
     onNavigateToQuiz: () -> Unit = {},
-    viewModel: FavoritesViewModel = hiltViewModel()
+    viewModel: FavoritesViewModel = koinViewModel()
 ) {
     val favoriteWords by viewModel.favoriteWords.collectAsState()
 

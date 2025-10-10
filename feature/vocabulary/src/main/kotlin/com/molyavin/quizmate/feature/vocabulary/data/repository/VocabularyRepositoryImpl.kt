@@ -11,14 +11,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Реалізація VocabularyRepository тільки з Firestore (без кешування)
  */
-@Singleton
-class VocabularyRepositoryImpl @Inject constructor(
+class VocabularyRepositoryImpl(
     private val firestoreDataSource: VocabularyFirestoreDataSource,
     private val firebaseAuth: FirebaseAuth
 ) : VocabularyRepository {

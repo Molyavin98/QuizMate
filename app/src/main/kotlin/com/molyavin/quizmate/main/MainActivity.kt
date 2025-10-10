@@ -10,7 +10,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.molyavin.quizmate.BuildConfig
-import com.molyavin.quizmate.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
 import com.molyavin.quizmate.feature.auth.domain.model.AuthState
 import com.molyavin.quizmate.feature.auth.presentation.ui.login.AuthLoginViewModel
@@ -29,15 +27,13 @@ import com.molyavin.quizmate.feature.auth.presentation.ui.register.AuthRegisterV
 import com.molyavin.quizmate.feature.auth.presentation.ui.register.RegisterScreen
 import com.molyavin.quizmate.feature.settings.domain.model.AppTheme
 import com.molyavin.quizmate.splash.SplashScreen
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import com.molyavin.quizmate.feature.settings.domain.repository.SettingsRepository
+import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.koinViewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository by inject()
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
@@ -51,7 +47,7 @@ class MainActivity : ComponentActivity() {
         setupGoogleSignIn()
 
         setContent {
-            val viewModel: MainViewModel = hiltViewModel()
+            val viewModel: MainViewModel = koinViewModel()
             val authState by viewModel.authStateModel.collectAsStateWithLifecycle()
             val theme by settingsRepository.observeTheme().collectAsState(initial = AppTheme.SYSTEM)
             var showSplash by remember { mutableStateOf(true) }
@@ -74,12 +70,33 @@ class MainActivity : ComponentActivity() {
                         is AuthState.Loading -> "login" // fallback
                     }
 
+                    // Реактивна навігація при зміні стану аутентифікації
+                    LaunchedEffect(authState) {
+                        when (authState) {
+                            is AuthState.Authenticated -> {
+                                if (navController.currentDestination?.route != "main") {
+                                    navController.navigate("main") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            }
+                            is AuthState.Unauthenticated -> {
+                                if (navController.currentDestination?.route != "login") {
+                                    navController.navigate("login") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            }
+                            is AuthState.Loading -> {}
+                        }
+                    }
+
                     NavHost(
                         navController = navController,
                         startDestination = startDestination
                     ) {
                         composable("login") {
-                            val loginViewModel: AuthLoginViewModel = hiltViewModel()
+                            val loginViewModel: AuthLoginViewModel = koinViewModel()
                             currentViewModel = loginViewModel
 
                             LoginScreen(
@@ -95,7 +112,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("register") {
-                            val registerViewModel: AuthRegisterViewModel = hiltViewModel()
+                            val registerViewModel: AuthRegisterViewModel = koinViewModel()
                             currentViewModel = registerViewModel
 
                             RegisterScreen(
@@ -109,7 +126,6 @@ class MainActivity : ComponentActivity() {
                                 viewModel = registerViewModel
                             )
                         }
-
                         composable("main") {
                             MainScreen()
                         }

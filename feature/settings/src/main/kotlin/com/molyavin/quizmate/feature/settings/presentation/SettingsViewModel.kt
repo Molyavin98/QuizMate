@@ -7,7 +7,6 @@ import com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignOutUseCase
 import com.molyavin.quizmate.feature.settings.domain.model.AppLanguage
 import com.molyavin.quizmate.feature.settings.domain.model.AppTheme
 import com.molyavin.quizmate.feature.settings.domain.repository.SettingsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
+class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val authGetCurrentUserUseCase: AuthGetCurrentUserUseCase,
     private val authSignOutUseCase: AuthSignOutUseCase

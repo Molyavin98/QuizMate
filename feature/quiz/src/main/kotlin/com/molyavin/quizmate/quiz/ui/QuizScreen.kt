@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.GradientBrushHorizontal
@@ -27,7 +27,7 @@ import com.molyavin.quizmate.quiz.presentation.QuizViewModel
 @Composable
 fun QuizScreen(
     onNavigateBack: () -> Unit,
-    viewModel: QuizViewModel = hiltViewModel()
+    viewModel: QuizViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }

@@ -5,13 +5,12 @@ import com.molyavin.quizmate.flashcards.domain.repository.FlashCardsRepository
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 /**
  * Реалізація FlashCardsRepository
  * Використовує VocabularyRepository як джерело даних
  */
-class FlashCardsRepositoryImpl @Inject constructor(
+class FlashCardsRepositoryImpl(
     private val vocabularyRepository: VocabularyRepository
 ) : FlashCardsRepository {
 
