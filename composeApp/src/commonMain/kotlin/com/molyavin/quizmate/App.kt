@@ -1,21 +1,32 @@
 package com.molyavin.quizmate
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.molyavin.quizmate.core.viewmodel.rememberKoinViewModel
+import com.molyavin.quizmate.core.viewmodel.KmpViewModel
 import com.molyavin.quizmate.feature.auth.domain.model.AuthState
 import com.molyavin.quizmate.feature.auth.presentation.ui.login.LoginScreen
 import com.molyavin.quizmate.feature.auth.presentation.ui.register.RegisterScreen
-import org.koin.compose.viewmodel.koinViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+private enum class AppDestination {
+    Login,
+    Register,
+    Main
+}
 
 /**
  * Главная Composable функция приложения
@@ -24,12 +35,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun App(
     onGoogleSignInClick: () -> Unit = {},
-    viewModel: AppViewModel = koinViewModel()
+    onActiveViewModelChanged: (KmpViewModel?) -> Unit = {},
+    viewModel: AppViewModel = rememberKoinViewModel()
 ) {
-    val authState by viewModel.authStateModel.collectAsStateWithLifecycle()
-    val navController = rememberNavController()
+    val authState by viewModel.authStateModel.collectAsState()
+    var currentDestination by remember { mutableStateOf(AppDestination.Login) }
 
-    // Тема приложения
+    LaunchedEffect(authState) {
+        currentDestination = when (authState) {
+            is AuthState.Authenticated -> AppDestination.Main
+            is AuthState.Unauthenticated -> AppDestination.Login
+            is AuthState.Loading -> AppDestination.Login
+        }
+    }
+
+    LaunchedEffect(currentDestination) {
+        if (currentDestination != AppDestination.Login && currentDestination != AppDestination.Register) {
+            onActiveViewModelChanged(null)
+        }
+    }
+
     MaterialTheme(
         colorScheme = darkColorScheme(
             primary = Color(0xFF6B4EFF),
@@ -42,76 +67,32 @@ fun App(
             onSurface = Color.White
         )
     ) {
-        // Определяем стартовый маршрут на основе состояния аутентификации
-        val startDestination = when (authState) {
-            is AuthState.Authenticated -> "main"
-            is AuthState.Unauthenticated -> "login"
-            is AuthState.Loading -> "login"
-        }
+        when (currentDestination) {
+            AppDestination.Login -> LoginScreen(
+                onNavigateToRegister = { currentDestination = AppDestination.Register },
+                onNavigateToHome = { currentDestination = AppDestination.Main },
+                onGoogleSignInClick = onGoogleSignInClick,
+                onActiveViewModelChanged = { onActiveViewModelChanged(it) }
+            )
 
-        // Реактивная навигация при изменении authState
-        LaunchedEffect(authState) {
-            when (authState) {
-                is AuthState.Authenticated -> {
-                    if (navController.currentDestination?.route != "main") {
-                        navController.navigate("main") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                }
-                is AuthState.Unauthenticated -> {
-                    if (navController.currentDestination?.route != "login") {
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                }
-                is AuthState.Loading -> {}
-            }
-        }
+            AppDestination.Register -> RegisterScreen(
+                onNavigateBack = { currentDestination = AppDestination.Login },
+                onNavigateToHome = { currentDestination = AppDestination.Main },
+                onGoogleSignInClick = onGoogleSignInClick,
+                onActiveViewModelChanged = { onActiveViewModelChanged(it) }
+            )
 
-        NavHost(
-            navController = navController,
-            startDestination = startDestination
-        ) {
-            composable("login") {
-                LoginScreen(
-                    onNavigateToRegister = { navController.navigate("register") },
-                    onNavigateToHome = {
-                        navController.navigate("main") {
-                            popUpTo("login") { inclusive = true }
-                        }
-                    },
-                    onGoogleSignInClick = onGoogleSignInClick
+            AppDestination.Main -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "QuizMate Main Screen",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
-            }
-
-            composable("register") {
-                RegisterScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToHome = {
-                        navController.navigate("main") {
-                            popUpTo("register") { inclusive = true }
-                        }
-                    },
-                    onGoogleSignInClick = onGoogleSignInClick
-                )
-            }
-
-            composable("main") {
-                // Временный экран - заменим на MainScreen позже
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "QuizMate Main Screen",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
             }
         }
     }

@@ -1,7 +1,53 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    kotlin("multiplatform")
+    id("com.android.library")
+    kotlin("plugin.compose")
+    id("org.jetbrains.compose") version "1.7.1"
+}
+
+kotlin {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "Core"
+            isStatic = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.koin.core)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.koin.android)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.retrofit)
+            implementation(libs.retrofit.converter.gson)
+            implementation(libs.okhttp)
+            implementation(libs.okhttp.logging.interceptor)
+            implementation(libs.timber)
+        }
+
+        iosMain.dependencies {
+            // iOS specific dependencies can be added here
+        }
+    }
 }
 
 android {
@@ -16,43 +62,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    buildFeatures {
-        compose = true
-    }
-}
-
-dependencies {
-    implementation(libs.androidx.core.ktx)
-
-    // Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-
-    // Koin
-    implementation(libs.koin.android)
-
-    // Retrofit & OkHttp
-    api(libs.retrofit)
-    api(libs.retrofit.converter.gson)
-    api(libs.okhttp)
-    api(libs.okhttp.logging.interceptor)
-
-    // Coroutines
-    api(libs.kotlinx.coroutines.android)
-
-    // DataStore
-    api(libs.androidx.datastore.preferences)
-
-    // Timber
-    api(libs.timber)
-
-    testImplementation(libs.junit)
 }

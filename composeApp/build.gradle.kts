@@ -34,17 +34,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            // Navigation
-            implementation(libs.androidx.navigation.compose)
-
-            // Lifecycle
-            implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
-            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-
             // Koin
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
@@ -54,7 +46,6 @@ kotlin {
             implementation(project(":feature:auth:domain"))
             implementation(project(":feature:auth:data"))
             implementation(project(":feature:auth:presentation"))
-            // Добавьте остальные модули когда они будут готовы
         }
 
         androidMain.dependencies {

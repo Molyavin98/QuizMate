@@ -1,7 +1,6 @@
 package com.molyavin.quizmate.feature.auth.presentation.ui.login
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.molyavin.quizmate.core.viewmodel.KmpViewModel
 import com.molyavin.quizmate.feature.auth.domain.model.AuthResult
 import com.molyavin.quizmate.feature.auth.domain.usecase.AuthObserveAuthStateUseCase
 import com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignInWithEmailUseCase
@@ -21,12 +20,12 @@ class AuthLoginViewModel(
     private val authSignInWithEmailUseCase: AuthSignInWithEmailUseCase,
     private val authSignInWithGoogleUseCase: AuthSignInWithGoogleUseCase,
     authObserveAuthStateUseCase: AuthObserveAuthStateUseCase
-) : ViewModel() {
+) : KmpViewModel() {
 
     private val _authStateModel = MutableStateFlow(AuthStateModel())
     val authStateModel: StateFlow<AuthStateModel> = _authStateModel.asStateFlow()
 
-    private val _authEffect = Channel<AuthEffect>()
+    private val _authEffect = Channel<AuthEffect>(Channel.BUFFERED)
     val effect = _authEffect.receiveAsFlow()
 
     init {
@@ -109,5 +108,10 @@ class AuthLoginViewModel(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _authEffect.close()
     }
 }

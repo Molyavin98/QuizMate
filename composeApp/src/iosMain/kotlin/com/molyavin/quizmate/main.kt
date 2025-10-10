@@ -2,6 +2,7 @@ package com.molyavin.quizmate
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.molyavin.quizmate.di.appModule
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import platform.UIKit.UIViewController
 
@@ -10,9 +11,10 @@ import platform.UIKit.UIViewController
  * Вызывается из SwiftUI: ComposeView()
  */
 fun MainViewController(): UIViewController {
-    // Инициализация Koin для iOS
-    startKoin {
-        modules(appModule)
+    if (GlobalContext.getOrNull() == null) {
+        startKoin {
+            modules(appModule)
+        }
     }
 
     return ComposeUIViewController {

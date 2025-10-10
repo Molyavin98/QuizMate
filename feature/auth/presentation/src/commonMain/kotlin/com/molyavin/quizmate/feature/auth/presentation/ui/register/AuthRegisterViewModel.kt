@@ -1,8 +1,8 @@
 package com.molyavin.quizmate.feature.auth.presentation.ui.register
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.molyavin.quizmate.core.viewmodel.KmpViewModel
 import com.molyavin.quizmate.feature.auth.domain.model.AuthResult
+import com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignInWithGoogleUseCase
 import com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignUpWithEmailUseCase
 import com.molyavin.quizmate.feature.auth.presentation.model.AuthEffect
 import com.molyavin.quizmate.feature.auth.presentation.model.AuthIntent
@@ -14,17 +14,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.molyavin.quizmate.feature.auth.domain.usecase.AuthSignInWithGoogleUseCase
 
 class AuthRegisterViewModel(
     private val authSignUpWithEmailUseCase: AuthSignUpWithEmailUseCase,
     private val authSignInWithGoogleUseCase: AuthSignInWithGoogleUseCase
-) : ViewModel() {
+) : KmpViewModel() {
 
     private val _authStateModel = MutableStateFlow(AuthStateModel())
     val authStateModel: StateFlow<AuthStateModel> = _authStateModel.asStateFlow()
 
-    private val _authEffect = Channel<AuthEffect>()
+    private val _authEffect = Channel<AuthEffect>(Channel.BUFFERED)
     val effect = _authEffect.receiveAsFlow()
 
     private var confirmPassword = ""
@@ -115,5 +114,10 @@ class AuthRegisterViewModel(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _authEffect.close()
     }
 }
