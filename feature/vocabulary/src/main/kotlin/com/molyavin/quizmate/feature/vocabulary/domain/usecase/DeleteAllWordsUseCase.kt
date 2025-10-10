@@ -1,9 +1,7 @@
 package com.molyavin.quizmate.feature.vocabulary.domain.usecase
 
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import javax.inject.Inject
-
-class DeleteAllWordsUseCase @Inject constructor(
+class DeleteAllWordsUseCase(
     private val repository: VocabularyRepository
 ) {
     suspend operator fun invoke() {

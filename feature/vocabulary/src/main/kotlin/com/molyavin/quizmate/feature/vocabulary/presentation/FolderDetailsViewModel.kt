@@ -1,23 +1,17 @@
 package com.molyavin.quizmate.feature.vocabulary.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllFoldersUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class FolderDetailsViewModel @Inject constructor(
-    private val getAllFoldersUseCase: GetAllFoldersUseCase,
-    savedStateHandle: SavedStateHandle
+class FolderDetailsViewModel(
+    private val getAllFoldersUseCase: GetAllFoldersUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FolderDetailsState())

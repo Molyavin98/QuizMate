@@ -89,7 +89,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.molyavin.quizmate.core.R
@@ -113,7 +113,7 @@ fun DictionaryScreen(
     onNavigateToFolder: ((String) -> Unit)? = null,
     folderId: String? = null,
     isLearningMode: Boolean = false,
-    viewModel: DictionaryViewModel = hiltViewModel()
+    viewModel: DictionaryViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }

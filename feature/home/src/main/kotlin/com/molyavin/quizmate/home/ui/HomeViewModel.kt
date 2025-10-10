@@ -7,7 +7,6 @@ import com.molyavin.quizmate.home.model.HomeIntent
 import com.molyavin.quizmate.home.model.HomeState
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.GetAllFoldersUseCase
 import com.molyavin.quizmate.feature.vocabulary.domain.usecase.VocabularySyncFromFirestoreUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val getAllFoldersUseCase: GetAllFoldersUseCase,
     private val vocabularySyncFromFirestoreUseCase: VocabularySyncFromFirestoreUseCase
 ) : ViewModel() {

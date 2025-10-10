@@ -2,9 +2,7 @@ package com.molyavin.quizmate.feature.vocabulary.domain.usecase
 
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import javax.inject.Inject
-
-class AddWordUseCase @Inject constructor(
+class AddWordUseCase(
     private val repository: VocabularyRepository
 ) {
     suspend operator fun invoke(word: Word): Result<String> {

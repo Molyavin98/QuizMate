@@ -45,7 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.CardSize
@@ -63,7 +63,7 @@ fun HomeScreen(
     onNavigateToFolder: (String) -> Unit,
     onNavigateToFavorites: () -> Unit = {},
     onNavigateToProfile: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var isRefreshing by remember { mutableStateOf(false) }

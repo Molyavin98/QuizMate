@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.molyavin.quizmate.flashcards.domain.model.FlashCardSession
 import com.molyavin.quizmate.flashcards.domain.usecase.GetFlashCardsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,10 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class FlashCardsViewModel @Inject constructor(
+class FlashCardsViewModel(
     private val getFlashCardsUseCase: GetFlashCardsUseCase,
     private val vocabularyRepository: com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
 ) : ViewModel() {

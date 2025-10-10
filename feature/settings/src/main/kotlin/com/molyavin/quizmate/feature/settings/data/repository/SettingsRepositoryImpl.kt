@@ -10,12 +10,11 @@ import com.molyavin.quizmate.feature.settings.domain.repository.SettingsReposito
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Імплементація SettingsRepository
  */
-class SettingsRepositoryImpl @Inject constructor(
+class SettingsRepositoryImpl(
     private val settingsDataStore: SettingsDataStore,
     private val firebaseAuth: FirebaseAuth
 ) : SettingsRepository {

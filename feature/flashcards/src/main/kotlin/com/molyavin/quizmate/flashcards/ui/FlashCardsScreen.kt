@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.molyavin.quizmate.core.R
@@ -39,7 +39,7 @@ import kotlin.math.roundToInt
 fun FlashCardsScreen(
     onNavigateBack: () -> Unit,
     folderId: String? = null,
-    viewModel: FlashCardsViewModel = hiltViewModel()
+    viewModel: FlashCardsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }

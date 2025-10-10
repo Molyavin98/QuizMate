@@ -3,15 +3,11 @@ package com.molyavin.quizmate.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class SplashViewModel @Inject constructor(
+class SplashViewModel(
     private val vocabularyRepository: VocabularyRepository
 ) : ViewModel() {
 

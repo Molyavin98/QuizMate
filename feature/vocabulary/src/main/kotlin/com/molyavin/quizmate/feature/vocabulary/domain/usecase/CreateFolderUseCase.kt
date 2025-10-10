@@ -1,9 +1,7 @@
 package com.molyavin.quizmate.feature.vocabulary.domain.usecase
 
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import javax.inject.Inject
-
-class CreateFolderUseCase @Inject constructor(
+class CreateFolderUseCase(
     private val repository: VocabularyRepository
 ) {
     suspend operator fun invoke(name: String): Result<String> {

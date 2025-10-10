@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
@@ -33,7 +33,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(
     onSplashFinished: () -> Unit,
-    viewModel: SplashViewModel = hiltViewModel()
+    viewModel: SplashViewModel = koinViewModel()
 ) {
     var startAnimation by remember { mutableStateOf(false) }
     val syncState by viewModel.state.collectAsStateWithLifecycle()
