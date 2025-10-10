@@ -25,9 +25,8 @@ workManager = "2.10.0"
 googleServices = "4.4.2"
 
 # KMP Libraries
-gitliveFirebase = "2.2.0"
-koin = "3.5.6"
-koinCompose = "1.1.5"
+gitliveFirebase = "1.12.0"
+koin = "4.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -82,8 +81,8 @@ gitlive-firebase-common = { group = "dev.gitlive", name = "firebase-common", ver
 # Koin (KMP DI)
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
-koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinCompose" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
 [plugins]
