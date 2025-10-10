@@ -14,7 +14,11 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":feature:vocabulary"))
 
     // Splash Screen API
     implementation(libs.androidx.core.splashscreen)
+
+    // Timber for logging
+    implementation(libs.timber)
 }

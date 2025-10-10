@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetWordsByFolderUseCase @Inject constructor(
     private val repository: VocabularyRepository
 ) {
-    operator fun invoke(folderId: Long?): Flow<List<Word>> {
+    operator fun invoke(folderId: String?): Flow<List<Word>> {
         return if (folderId == null) {
             repository.getAllWords()
         } else {

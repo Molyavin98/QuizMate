@@ -25,13 +25,14 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
     }
 
-    override fun getCardsByFolder(folderId: Long): Flow<List<FlashCard>> {
+    override fun getCardsByFolder(folderId: String): Flow<List<FlashCard>> {
         return vocabularyRepository.getWordsByFolder(folderId).map { words ->
             words.map { word ->
                 FlashCard(
@@ -41,7 +42,25 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
+                )
+            }
+        }
+    }
+
+    override fun getFavoriteCards(): Flow<List<FlashCard>> {
+        return vocabularyRepository.getAllWords().map { words ->
+            words.filter { it.isFavorite }.map { word ->
+                FlashCard(
+                    id = word.id,
+                    frontText = word.english,
+                    backText = word.ukrainian,
+                    example = word.example,
+                    category = word.category,
+                    difficulty = word.difficulty,
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -57,7 +76,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }
@@ -65,7 +85,7 @@ class FlashCardsRepositoryImpl @Inject constructor(
 
     override fun getCardsByDifficulty(difficulty: String): Flow<List<FlashCard>> {
         return vocabularyRepository.getAllWords().map { words ->
-            words.filter { it.difficulty.name == difficulty }.map { word ->
+            words.filter { it.difficulty == difficulty }.map { word ->
                 FlashCard(
                     id = word.id,
                     frontText = word.english,
@@ -73,7 +93,8 @@ class FlashCardsRepositoryImpl @Inject constructor(
                     example = word.example,
                     category = word.category,
                     difficulty = word.difficulty,
-                    imageUrl = word.imageUrl
+                    imageUrl = word.imageUrl,
+                    isFavorite = word.isFavorite
                 )
             }
         }

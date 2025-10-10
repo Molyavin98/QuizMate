@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +17,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -34,6 +39,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -47,6 +55,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,10 +71,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,19 +80,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.molyavin.quizmate.core.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
 import com.molyavin.quizmate.core.ui.GradientTopAppBar
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
 import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.presentation.DictionaryContract
@@ -96,12 +103,15 @@ import kotlinx.coroutines.delay
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun DictionaryScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToFolder: ((Long) -> Unit)? = null,
-    folderId: Long? = null,
+    onNavigateToFolder: ((String) -> Unit)? = null,
+    folderId: String? = null,
     isLearningMode: Boolean = false,
     viewModel: DictionaryViewModel = hiltViewModel()
 ) {
@@ -148,9 +158,8 @@ fun DictionaryScreen(
     LaunchedEffect(folderId) {
         if (folderId != null) {
             viewModel.handleIntent(DictionaryContract.Intent.SelectFolder(folderId))
-        } else {
-            viewModel.handleIntent(DictionaryContract.Intent.SelectFolder(null))
         }
+        // Якщо folderId == null, не робимо нічого - дозволяємо автоматичному вибору спрацювати
     }
 
     LaunchedEffect(Unit) {
@@ -170,7 +179,7 @@ fun DictionaryScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush =  QuizMateTheme.colors.backgroundGradient),
+            .background(brush = QuizMateTheme.colors.backgroundGradient),
         containerColor = Color.Transparent,
         topBar = {
             GradientTopAppBar(
@@ -238,10 +247,23 @@ fun DictionaryScreen(
                 FloatingActionButton(
                     onClick = { viewModel.handleIntent(DictionaryContract.Intent.ShowAddDialog) },
                     containerColor = Color.Transparent,
-                    modifier = Modifier.background(
-                        brush =  QuizMateTheme.colors.backgroundGradient,
-                        shape = CircleShape
-                    )
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 12.dp,
+                            shape = CircleShape,
+                            ambientColor = Color(0xFF6A11CB).copy(alpha = 0.4f),
+                            spotColor = Color(0xFF2575FC).copy(alpha = 0.4f)
+                        )
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF40C9FF),
+                                    Color(0xFFE81CFF)
+                                )
+                            ),
+                            shape = CircleShape
+                        )
                 ) {
                     Icon(
                         Icons.Default.Add,
@@ -255,113 +277,9 @@ fun DictionaryScreen(
     ) { padding ->
         Column(
             modifier = Modifier
+                .padding(PaddingValues(top = padding.calculateTopPadding()))
                 .fillMaxSize()
-                .padding(padding)
         ) {
-            // Search bar
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { viewModel.handleIntent(DictionaryContract.Intent.SearchWords(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = { Text(stringResource(R.string.dictionary_search_hint)) },
-                leadingIcon = { Icon(Icons.Default.Search, null) },
-                singleLine = true
-            )
-
-            // Folders chips (тільки в режимі бібліотеки)
-            if (!isLearningMode) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(state.vocabularyFolders) { folder ->
-                        var showDeleteDialog by remember { mutableStateOf(false) }
-
-                        FilterChip(
-                            selected = state.selectedFolderId == folder.id,
-                            onClick = {
-                                viewModel.handleIntent(
-                                    DictionaryContract.Intent.SelectFolder(
-                                        folder.id
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = "${folder.name} (${folder.wordCount})",
-                                    color = if (state.selectedFolderId == folder.id) Color.Black else Color.White,
-                                )
-                            },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = { showDeleteDialog = true },
-                                    modifier = Modifier.size(18.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        stringResource(R.string.folder_delete_icon_desc),
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                }
-                            }
-                        )
-
-                        if (showDeleteDialog) {
-                            AlertDialog(
-                                onDismissRequest = { showDeleteDialog = false },
-                                title = { Text(stringResource(R.string.folder_delete_confirm_title)) },
-                                text = {
-                                    Text(
-                                        stringResource(
-                                            R.string.folder_delete_confirm_message,
-                                            folder.name,
-                                            folder.wordCount
-                                        )
-                                    )
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = {
-                                        viewModel.handleIntent(
-                                            DictionaryContract.Intent.DeleteFolder(
-                                                folder.id
-                                            )
-                                        )
-                                        showDeleteDialog = false
-                                    }) {
-                                        Text(stringResource(R.string.delete))
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(onClick = { showDeleteDialog = false }) {
-                                        Text(stringResource(R.string.cancel))
-                                    }
-                                }
-                            )
-                        }
-                    }
-
-                    // Add Folder chip
-                    item {
-                        FilterChip(
-                            selected = false,
-                            onClick = {
-                                viewModel.handleIntent(DictionaryContract.Intent.ShowAddFolderDialog)
-                            },
-                            label = {
-                                Text(
-                                    text = "+ Folder",
-                                    color = Color.White
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-
             when {
                 state.isLoading -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -379,11 +297,133 @@ fun DictionaryScreen(
                             .fillMaxSize()
                             .pullRefresh(pullRefreshState)
                     ) {
-                        LazyColumn(
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.fillMaxSize()
-                        ) {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            item {
+                                OutlinedTextField(
+                                    value = state.searchQuery,
+                                    onValueChange = {
+                                        viewModel.handleIntent(
+                                            DictionaryContract.Intent.SearchWords(
+                                                it
+                                            )
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                        .height(48.dp),
+                                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                                    placeholder = { Text("Search…", fontSize = 14.sp) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Default.Search,
+                                            null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                            }
+
+                            stickyHeader {
+                                // Folders chips (тільки в режимі бібліотеки)
+                                if (!isLearningMode) {
+                                    LazyRow(
+                                        modifier = Modifier.background(
+                                            brush = QuizMateTheme.colors.backgroundGradient
+                                        ),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        items(state.vocabularyFolders) { folder ->
+                                            var showDeleteDialog by remember { mutableStateOf(false) }
+
+                                            FilterChip(
+                                                selected = state.selectedFolderId == folder.id,
+                                                onClick = {
+                                                    viewModel.handleIntent(
+                                                        DictionaryContract.Intent.SelectFolder(
+                                                            folder.id
+                                                        )
+                                                    )
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = "${folder.name} (${folder.wordCount})",
+                                                        color = if (state.selectedFolderId == folder.id) Color.Black else Color.White,
+                                                    )
+                                                },
+                                                trailingIcon = {
+                                                    IconButton(
+                                                        onClick = { showDeleteDialog = true },
+                                                        modifier = Modifier.size(18.dp)
+                                                    ) {
+                                                        Icon(
+                                                            Icons.Default.Close,
+                                                            stringResource(R.string.folder_delete_icon_desc),
+                                                            modifier = Modifier.size(14.dp)
+                                                        )
+                                                    }
+                                                }
+                                            )
+
+                                            if (showDeleteDialog) {
+                                                AlertDialog(
+                                                    onDismissRequest = { showDeleteDialog = false },
+                                                    title = { Text(stringResource(R.string.folder_delete_confirm_title)) },
+                                                    text = {
+                                                        Text(
+                                                            stringResource(
+                                                                R.string.folder_delete_confirm_message,
+                                                                folder.name,
+                                                                folder.wordCount
+                                                            )
+                                                        )
+                                                    },
+                                                    confirmButton = {
+                                                        TextButton(onClick = {
+                                                            viewModel.handleIntent(
+                                                                DictionaryContract.Intent.DeleteFolder(
+                                                                    folder.id
+                                                                )
+                                                            )
+                                                            showDeleteDialog = false
+                                                        }) {
+                                                            Text(stringResource(R.string.delete))
+                                                        }
+                                                    },
+                                                    dismissButton = {
+                                                        TextButton(onClick = {
+                                                            showDeleteDialog = false
+                                                        }) {
+                                                            Text(stringResource(R.string.cancel))
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }
+
+                                        // Add Folder chip
+                                        item {
+                                            FilterChip(
+                                                selected = false,
+                                                onClick = {
+                                                    viewModel.handleIntent(DictionaryContract.Intent.ShowAddFolderDialog)
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = "+ Folder",
+                                                        color = Color.White
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+
                             items(state.filteredWords) { word ->
                                 WordItem(
                                     word = word,
@@ -512,7 +552,9 @@ private fun WordItem(
         ) {
             Card(
                 onClick = onClick,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White.copy(alpha = 0.2f)
                 )
@@ -626,16 +668,16 @@ private fun EmptyState() {
 @Composable
 private fun AddWordDialog(
     vocabularyFolders: List<VocabularyFolder>,
-    selectedFolderId: Long?,
+    selectedFolderId: String?,
     onDismiss: () -> Unit,
-    onAdd: (String, String, String, String, Difficulty, String, Long?) -> Unit
+    onAdd: (String, String, String, String, String, String, String?) -> Unit
 ) {
     var english by remember { mutableStateOf("") }
     var ukrainian by remember { mutableStateOf("") }
     var example by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
-    var difficulty by remember { mutableStateOf(Difficulty.MEDIUM) }
+    var difficulty by remember { mutableStateOf("MEDIUM") }
     var folderId by remember { mutableStateOf(selectedFolderId) }
     var difficultyExpanded by remember { mutableStateOf(false) }
     var folderExpanded by remember { mutableStateOf(false) }
@@ -721,9 +763,10 @@ private fun AddWordDialog(
                 ) {
                     OutlinedTextField(
                         value = when (difficulty) {
-                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                            "EASY" -> stringResource(R.string.difficulty_easy)
+                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                            "HARD" -> stringResource(R.string.difficulty_hard)
+                            else -> stringResource(R.string.difficulty_medium)
                         },
                         onValueChange = {},
                         readOnly = true,
@@ -737,14 +780,15 @@ private fun AddWordDialog(
                         expanded = difficultyExpanded,
                         onDismissRequest = { difficultyExpanded = false }
                     ) {
-                        Difficulty.entries.forEach { diff ->
+                        listOf("EASY", "MEDIUM", "HARD").forEach { diff ->
                             DropdownMenuItem(
                                 text = {
                                     Text(
                                         when (diff) {
-                                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                                            "EASY" -> stringResource(R.string.difficulty_easy)
+                                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                                            "HARD" -> stringResource(R.string.difficulty_hard)
+                                            else -> diff
                                         }
                                     )
                                 },
@@ -824,9 +868,10 @@ private fun WordDetailsDialog(
                 Text(
                     stringResource(
                         R.string.word_details_difficulty, when (word.difficulty) {
-                            Difficulty.EASY -> stringResource(R.string.difficulty_easy)
-                            Difficulty.MEDIUM -> stringResource(R.string.difficulty_medium)
-                            Difficulty.HARD -> stringResource(R.string.difficulty_hard)
+                            "EASY" -> stringResource(R.string.difficulty_easy)
+                            "MEDIUM" -> stringResource(R.string.difficulty_medium)
+                            "HARD" -> stringResource(R.string.difficulty_hard)
+                            else -> word.difficulty
                         }
                     ), style = MaterialTheme.typography.bodyMedium
                 )

@@ -120,6 +120,43 @@ class VocabularyFirestoreDataSource @Inject constructor(
     }
 
     /**
+     * Зберегти декілька слів одночасно через batch операцію
+     */
+    suspend fun saveWordsBatch(words: List<VocabularyWordDto>): Result<List<VocabularyWordDto>> {
+        val currentUserId = userId ?: return Result.failure(Exception("User not authenticated"))
+
+        if (words.isEmpty()) {
+            return Result.success(emptyList())
+        }
+
+        return try {
+            val batch = firestore.batch()
+            val savedWords = mutableListOf<VocabularyWordDto>()
+
+            words.forEach { word ->
+                val wordWithUserId = word.copy(userId = currentUserId)
+
+                val docRef = if (word.id.isEmpty()) {
+                    // Створити нове слово
+                    firestore.collection("words").document()
+                } else {
+                    // Оновити існуюче слово
+                    firestore.collection("words").document(word.id)
+                }
+
+                val newWord = wordWithUserId.copy(id = docRef.id)
+                batch.set(docRef, newWord)
+                savedWords.add(newWord)
+            }
+
+            batch.commit().await()
+            Result.success(savedWords)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Видалити слово з Firestore
      */
     suspend fun deleteWord(wordId: String): Result<Unit> {
@@ -128,6 +165,29 @@ class VocabularyFirestoreDataSource @Inject constructor(
                 .document(wordId)
                 .delete()
                 .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Видалити декілька слів одночасно через batch операцію
+     */
+    suspend fun deleteWordsBatch(wordIds: List<String>): Result<Unit> {
+        if (wordIds.isEmpty()) {
+            return Result.success(Unit)
+        }
+
+        return try {
+            val batch = firestore.batch()
+
+            wordIds.forEach { wordId ->
+                val docRef = firestore.collection("words").document(wordId)
+                batch.delete(docRef)
+            }
+
+            batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

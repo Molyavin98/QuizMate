@@ -18,7 +18,7 @@ interface VocabularyRepository {
     /**
      * Отримати слово за ID
      */
-    suspend fun getWordById(id: Long): Word?
+    suspend fun getWordById(id: String): Word?
 
     /**
      * Пошук слів
@@ -36,9 +36,24 @@ interface VocabularyRepository {
     suspend fun getRandomWords(count: Int): List<Word>
 
     /**
+     * Отримати випадкові слова з папки для тесту
+     */
+    suspend fun getRandomWordsFromFolder(folderId: String, count: Int): List<Word>
+
+    /**
+     * Отримати обрані слова
+     */
+    suspend fun getFavoriteWords(): List<Word>
+
+    /**
      * Додати нове слово
      */
-    suspend fun addWord(word: Word): Long
+    suspend fun addWord(word: Word): String
+
+    /**
+     * Додати декілька слів одночасно (batch)
+     */
+    suspend fun addWordsBatch(words: List<Word>): List<String>
 
     /**
      * Оновити слово
@@ -53,7 +68,7 @@ interface VocabularyRepository {
     /**
      * Оновити статистику практики
      */
-    suspend fun updatePracticeStats(wordId: Long, isCorrect: Boolean)
+    suspend fun updatePracticeStats(wordId: String, isCorrect: Boolean)
 
     /**
      * Видалити всі слова
@@ -63,7 +78,7 @@ interface VocabularyRepository {
     /**
      * Отримати слова в папці
      */
-    fun getWordsByFolder(folderId: Long): Flow<List<Word>>
+    fun getWordsByFolder(folderId: String): Flow<List<Word>>
 
     /**
      * Отримати слова без папки
@@ -79,12 +94,12 @@ interface VocabularyRepository {
     /**
      * Створити нову папку
      */
-    suspend fun createFolder(name: String): Long
+    suspend fun createFolder(name: String): String
 
     /**
      * Видалити папку
      */
-    suspend fun deleteFolder(folderId: Long)
+    suspend fun deleteFolder(folderId: String)
 
     suspend fun syncFromFirestore()
 

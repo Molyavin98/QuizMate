@@ -15,4 +15,5 @@ android {
 dependencies {
     implementation(project(":core"))
     implementation(project(":feature:vocabulary"))
+    implementation(libs.coil.compose)
 }

@@ -2,12 +2,17 @@ package com.molyavin.quizmate.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,13 +59,27 @@ fun MainScreen() {
             if (showBottomBar) {
                 NavigationBar(
                     containerColor = Color.Transparent,
-                    modifier = Modifier.background(brush = GradientBrushHorizontal)
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                            ambientColor = Color.Black.copy(alpha = 5f)
+                        )
+                        .background(brush = GradientBrushHorizontal)
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+
                 ) {
                     val currentDestination = navBackStackEntry?.destination
 
                     BottomNavItem.entries.forEach { item ->
                         NavigationBarItem(
-                            icon = { Icon(item.icon, contentDescription = item.title, tint = Color.White) },
+                            icon = {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = item.title,
+                                    tint = Color.White
+                                )
+                            },
                             label = { Text(item.title, color = Color.White) },
                             selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                             colors = NavigationBarItemDefaults.colors(
@@ -118,7 +137,7 @@ fun MainScreen() {
             }
 
             composable("folder/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 FolderDetailsScreen(
                     folderId = folderId,
                     onNavigateBack = { navController.popBackStack() },
@@ -135,7 +154,7 @@ fun MainScreen() {
             }
 
             composable("learn/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 DictionaryScreen(
                     onNavigateBack = { navController.popBackStack() },
                     folderId = folderId,
@@ -144,14 +163,21 @@ fun MainScreen() {
             }
 
             composable("flashcards/{folderId}") { backStackEntry ->
-                val folderId = backStackEntry.arguments?.getString("folderId")?.toLongOrNull()
+                val folderId = backStackEntry.arguments?.getString("folderId")
                 FlashCardsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     folderId = folderId
                 )
             }
 
-            composable("quiz/{folderId}") { backStackEntry ->
+            composable("flashcards/favorites") {
+                FlashCardsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    folderId = "favorites"
+                )
+            }
+
+            composable("quiz/{folderId}") {
                 QuizScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
@@ -159,7 +185,13 @@ fun MainScreen() {
 
             composable("favorites") {
                 FavoritesScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToFlashCards = {
+                        navController.navigate("flashcards/favorites")
+                    },
+                    onNavigateToQuiz = {
+                        navController.navigate("quiz/favorites")
+                    }
                 )
             }
 
@@ -189,7 +221,6 @@ fun MainScreen() {
                 ProfileScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToLogin = {
-                        // Clear back stack and navigate to login
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
                         }
@@ -198,7 +229,6 @@ fun MainScreen() {
             }
         }
 
-        // Create Bottom Sheet
         if (showCreateSheet) {
             CreateBottomSheet(
                 onDismiss = { showCreateSheet = false },

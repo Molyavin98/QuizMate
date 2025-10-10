@@ -1,5 +1,6 @@
 package com.molyavin.quizmate.quiz.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.molyavin.quizmate.quiz.domain.GenerateQuizUseCase
@@ -17,8 +18,11 @@ import javax.inject.Inject
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val generateQuizUseCase: GenerateQuizUseCase,
-    private val vocabularyRepository: VocabularyRepository
+    private val vocabularyRepository: VocabularyRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val folderId: String? = savedStateHandle.get<String>("folderId")
 
     private val _state = MutableStateFlow(QuizContract.State())
     val state: StateFlow<QuizContract.State> = _state.asStateFlow()
@@ -44,7 +48,7 @@ class QuizViewModel @Inject constructor(
         _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
-            val result = generateQuizUseCase(count = 10)
+            val result = generateQuizUseCase(count = 10, folderId = folderId)
 
             result.onSuccess { questions ->
                 _state.update {

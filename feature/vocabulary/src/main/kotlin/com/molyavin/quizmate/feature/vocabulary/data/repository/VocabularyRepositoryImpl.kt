@@ -2,383 +2,337 @@ package com.molyavin.quizmate.feature.vocabulary.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFirestoreDataSource
-import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderDao
-import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyFolderEntity
-import com.molyavin.quizmate.feature.vocabulary.data.local.VocabularyWordDao
 import com.molyavin.quizmate.feature.vocabulary.data.remote.model.VocabularyFolderDto
 import com.molyavin.quizmate.feature.vocabulary.data.remote.model.VocabularyWordDto
 import com.molyavin.quizmate.feature.vocabulary.domain.model.VocabularyFolder
 import com.molyavin.quizmate.feature.vocabulary.domain.model.Word
 import com.molyavin.quizmate.feature.vocabulary.domain.repository.VocabularyRepository
-import com.molyavin.quizmate.feature.vocabulary.mapper.toDomain
-import com.molyavin.quizmate.feature.vocabulary.mapper.toEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * Реалізація VocabularyRepository з Room (кеш) + Firestore (синхронізація)
+ * Реалізація VocabularyRepository тільки з Firestore (без кешування)
  */
+@Singleton
 class VocabularyRepositoryImpl @Inject constructor(
-    private val vocabularyWordDao: VocabularyWordDao,
-    private val vocabularyFolderDao: VocabularyFolderDao,
-    private val vocabularyFirestoreDataSource: VocabularyFirestoreDataSource,
+    private val firestoreDataSource: VocabularyFirestoreDataSource,
     private val firebaseAuth: FirebaseAuth
 ) : VocabularyRepository {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    // In-memory кеш для Flow
+    private val wordsCache = MutableStateFlow<List<Word>>(emptyList())
+    private val foldersCache = MutableStateFlow<List<VocabularyFolder>>(emptyList())
 
-    /**
-     * Ручна синхронізація конкретної папки з Firestore
-     */
-    suspend fun syncFolderFromFirestore(folderId: Long?) {
-        if (firebaseAuth.currentUser == null) {
-            Timber.w("User not authenticated, skipping sync")
-            return
-        }
-
-        Timber.d("=== Manual folder sync started (folderId: $folderId) ===")
-
-        try {
-            if (folderId == null) {
-                // Якщо папка не обрана, синхронізуємо все
-                syncFromFirestore()
-                return
-            }
-
-            // Отримати firestoreId папки
-            val folder = vocabularyFolderDao.getFolderById(folderId)
-            val folderFirestoreId = folder?.firestoreId
-
-            if (folderFirestoreId == null) {
-                Timber.w("Folder $folderId has no firestoreId, syncing all")
-                syncFromFirestore()
-                return
-            }
-
-            // Синхронізувати тільки слова цієї папки
-            val remoteWords = vocabularyFirestoreDataSource.getWordsByFolder(folderFirestoreId)
-            Timber.d("Fetched ${remoteWords.size} words from Firestore for folder $folderId")
-
-            val remoteWordFirestoreIds = remoteWords.map { it.id }.toSet()
-
-            remoteWords.forEach { dto ->
-                try {
-                    val existingWord = vocabularyWordDao.getWordByFirestoreId(dto.id)
-                    val localFolderId = dto.folderId?.let { firestoreFolderId ->
-                        vocabularyFolderDao.getFolderByFirestoreId(firestoreFolderId)?.id
-                    }
-
-                    if (existingWord != null) {
-                        val updatedWord = dto.toEntity(
-                            localId = existingWord.id,
-                            localFolderId = localFolderId
-                        )
-                        vocabularyWordDao.updateWord(updatedWord)
-                        Timber.d("Updated word: ${dto.english}")
-                    } else {
-                        val newWord = dto.toEntity(localFolderId = localFolderId)
-                        vocabularyWordDao.insertWord(newWord)
-                        Timber.d("Inserted new word: ${dto.english}")
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error syncing word: ${dto.id}")
-                }
-            }
-
-            // Видалити локальні слова цієї папки, яких немає в Firestore
-            val localWordsInFolder = vocabularyWordDao.getWordsByFolderSync(folderId)
-            localWordsInFolder.forEach { localWord ->
-                if (localWord.firestoreId != null && localWord.firestoreId !in remoteWordFirestoreIds) {
-                    Timber.d("Deleting local word not in Firestore: ${localWord.english}")
-                    vocabularyWordDao.deleteWord(localWord)
-                }
-            }
-
-            Timber.d("=== Folder sync completed: ${remoteWords.size} words ===")
-        } catch (e: Exception) {
-            Timber.e(e, "Fatal error during folder sync")
-            throw e
-        }
-    }
-
-    /**
-     * Ручна синхронізація з Firestore (викликається через swipe-to-refresh)
-     */
     override suspend fun syncFromFirestore() {
         if (firebaseAuth.currentUser == null) {
             Timber.w("User not authenticated, skipping sync")
             return
         }
 
-        Timber.d("=== Manual sync started ===")
+        Timber.d("=== Sync started ===")
 
         try {
-            // Спочатку синхронізуємо папки
-            val remoteFolders = vocabularyFirestoreDataSource.getFolders()
+            // Завантажити папки
+            val remoteFolders = firestoreDataSource.getFolders()
             Timber.d("Fetched ${remoteFolders.size} folders from Firestore")
 
-            val remoteFirestoreIds = remoteFolders.map { it.id }.toSet()
+            foldersCache.value = remoteFolders.map { it.toDomain() }
 
-            remoteFolders.forEach { dto ->
-                try {
-                    val existingFolder = vocabularyFolderDao.getFolderByFirestoreId(dto.id)
-
-                    if (existingFolder != null) {
-                        val updatedFolder = dto.toEntity(localId = existingFolder.id)
-                        vocabularyFolderDao.insertFolder(updatedFolder)
-                        Timber.d("Updated folder: ${dto.name}")
-                    } else {
-                        val newFolder = dto.toEntity()
-                        vocabularyFolderDao.insertFolder(newFolder)
-                        Timber.d("Inserted new folder: ${dto.name}")
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error syncing folder: ${dto.id}")
-                }
-            }
-
-            // Видалити локальні папки, яких немає в Firestore
-            val allLocalFolders = vocabularyFolderDao.getAllFoldersSync()
-            allLocalFolders.forEach { localFolder ->
-                if (localFolder.firestoreId != null && localFolder.firestoreId !in remoteFirestoreIds) {
-                    Timber.d("Deleting local folder not in Firestore: ${localFolder.name}")
-                    vocabularyFolderDao.deleteFolder(localFolder.id)
-                } else if (localFolder.firestoreId == null) {
-                    // Папка без firestoreId - потрібно завантажити в Firestore
-                    Timber.d("Uploading local folder without firestoreId: ${localFolder.name}")
-                    val dto = VocabularyFolderDto.fromEntity(localFolder, firebaseAuth.currentUser!!.uid)
-                    vocabularyFirestoreDataSource.saveFolder(dto).onSuccess { savedDto ->
-                        vocabularyFolderDao.insertFolder(localFolder.copy(firestoreId = savedDto.id))
-                        Timber.d("Uploaded folder to Firestore: ${localFolder.name}, got firestoreId: ${savedDto.id}")
-                    }
-                }
-            }
-
-            val remoteWords = vocabularyFirestoreDataSource.getWords()
+            // Завантажити слова
+            val remoteWords = firestoreDataSource.getWords()
             Timber.d("Fetched ${remoteWords.size} words from Firestore")
 
-            val remoteWordFirestoreIds = remoteWords.map { it.id }.toSet()
+            wordsCache.value = remoteWords.map { it.toDomain() }
 
-            val allLocalWords = vocabularyWordDao.getAllWordsSync()
-
-            val localWordsMap = allLocalWords.associateBy { it.firestoreId }
-            val localWordsByName = allLocalWords.filter { it.firestoreId == null }
-                .associateBy { it.english.lowercase() }
-
-            remoteWords.forEach { dto ->
-                try {
-                    // Спочатку шукаємо за firestoreId
-                    var existingWord = localWordsMap[dto.id]
-
-                    // Якщо не знайшли, шукаємо за назвою (для слів без firestoreId)
-                    if (existingWord == null) {
-                        existingWord = localWordsByName[dto.english.lowercase()]
-                    }
-
-                    // Знайти локальний folderId за firestoreId папки
-                    val localFolderId = dto.folderId?.let { firestoreFolderId ->
-                        vocabularyFolderDao.getFolderByFirestoreId(firestoreFolderId)?.id
-                    }
-
-                    if (existingWord != null) {
-                        val updatedWord = dto.toEntity(
-                            localId = existingWord.id,
-                            localFolderId = localFolderId
-                        )
-                        vocabularyWordDao.updateWord(updatedWord)
-                    } else {
-                        val newWord = dto.toEntity(localFolderId = localFolderId)
-                        vocabularyWordDao.insertWord(newWord)
-                        Timber.d("Inserted new word: ${dto.english}")
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error syncing word: ${dto.id}")
-                }
-            }
-
-            allLocalWords.forEach { localWord ->
-                if (localWord.firestoreId != null && localWord.firestoreId !in remoteWordFirestoreIds) {
-                    Timber.d("Deleting local word not in Firestore: ${localWord.english}")
-                    vocabularyWordDao.deleteWord(localWord)
-                } else if (localWord.firestoreId == null) {
-                    // Слово без firestoreId - потрібно завантажити в Firestore
-                    Timber.d("Uploading local word without firestoreId: ${localWord.english}")
-                    val folderFirestoreId = localWord.folderId?.let { folderId ->
-                        vocabularyFolderDao.getFolderById(folderId)?.firestoreId
-                    }
-                    val dto = VocabularyWordDto.fromEntity(
-                        localWord,
-                        firebaseAuth.currentUser!!.uid,
-                        folderFirestoreId
-                    )
-                    vocabularyFirestoreDataSource.saveWord(dto).onSuccess { savedDto ->
-                        vocabularyWordDao.updateWord(localWord.copy(firestoreId = savedDto.id))
-                        Timber.d("Uploaded word to Firestore: ${localWord.english}, got firestoreId: ${savedDto.id}")
-                    }
-                }
-            }
-
-            Timber.d("=== Manual sync completed: ${remoteFolders.size} folders, ${remoteWords.size} words ===")
+            Timber.d("=== Sync completed: ${remoteFolders.size} folders, ${remoteWords.size} words ===")
         } catch (e: Exception) {
-            Timber.e(e, "Fatal error during manual sync")
+            Timber.e(e, "Fatal error during sync")
             throw e
         }
     }
 
     override fun getAllWords(): Flow<List<Word>> {
-        return vocabularyWordDao.getAllWords().map { entities ->
-            entities.map { it.toDomain() }
-        }
+        return wordsCache
     }
 
-    override suspend fun getWordById(id: Long): Word? {
-        return vocabularyWordDao.getWordById(id)?.toDomain()
+    override suspend fun getWordById(id: String): Word? {
+        return wordsCache.value.find { it.id == id }
     }
 
     override fun searchWords(query: String): Flow<List<Word>> {
-        return vocabularyWordDao.searchWords(query).map { entities ->
-            entities.map { it.toDomain() }
+        return wordsCache.map { words ->
+            words.filter { word ->
+                word.english.contains(query, ignoreCase = true) ||
+                word.ukrainian.contains(query, ignoreCase = true)
+            }
         }
     }
 
     override fun getWordsByCategory(category: String): Flow<List<Word>> {
-        return vocabularyWordDao.getWordsByCategory(category).map { entities ->
-            entities.map { it.toDomain() }
+        return wordsCache.map { words ->
+            words.filter { it.category == category }
         }
     }
 
     override suspend fun getRandomWords(count: Int): List<Word> {
-        return vocabularyWordDao.getRandomWords(count).map { it.toDomain() }
+        return wordsCache.value.shuffled().take(count)
     }
 
-    override suspend fun addWord(word: Word): Long {
-        val entity = word.toEntity()
-        val localId = vocabularyWordDao.insertWord(entity)
+    override suspend fun getRandomWordsFromFolder(folderId: String, count: Int): List<Word> {
+        return wordsCache.value
+            .filter { it.folderId == folderId }
+            .shuffled()
+            .take(count)
+    }
 
-        // Синхронізувати з Firestore
-        if (firebaseAuth.currentUser != null) {
-            scope.launch {
-                val wordWithLocalId = entity.copy(id = localId)
+    override suspend fun getFavoriteWords(): List<Word> {
+        return wordsCache.value.filter { it.isFavorite }
+    }
 
-                // Отримати firestoreId папки, якщо слово має folderId
-                val folderFirestoreId = wordWithLocalId.folderId?.let { folderId ->
-                    vocabularyFolderDao.getFolderById(folderId)?.firestoreId
-                }
-
-                val dto = VocabularyWordDto.fromEntity(
-                    wordWithLocalId,
-                    firebaseAuth.currentUser!!.uid,
-                    folderFirestoreId
-                )
-                vocabularyFirestoreDataSource.saveWord(dto).onSuccess { savedDto ->
-                    // Оновити firestoreId в локальній БД
-                    vocabularyWordDao.updateWord(wordWithLocalId.copy(firestoreId = savedDto.id))
-                }
-            }
+    override suspend fun addWord(word: Word): String {
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
         }
 
-        return localId
+        val dto = VocabularyWordDto.fromDomain(word, firebaseAuth.currentUser!!.uid)
+        val result = firestoreDataSource.saveWord(dto)
+
+        val savedDto = result.getOrElse { error ->
+            Timber.e(error, "Failed to add word")
+            throw error
+        }
+
+        // Оновити кеш
+        val savedWord = savedDto.toDomain()
+        wordsCache.value = wordsCache.value + savedWord
+
+        return savedDto.id
+    }
+
+    override suspend fun addWordsBatch(words: List<Word>): List<String> {
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
+        }
+
+        if (words.isEmpty()) {
+            return emptyList()
+        }
+
+        val dtos = words.map { word ->
+            VocabularyWordDto.fromDomain(word, firebaseAuth.currentUser!!.uid)
+        }
+
+        val result = firestoreDataSource.saveWordsBatch(dtos)
+
+        val savedDtos = result.getOrElse { error ->
+            Timber.e(error, "Failed to add words batch")
+            throw error
+        }
+
+        // Оновити кеш
+        val savedWords = savedDtos.map { it.toDomain() }
+        wordsCache.value = wordsCache.value + savedWords
+
+        return savedDtos.map { it.id }
     }
 
     override suspend fun updateWord(word: Word) {
-        val entity = word.toEntity()
-        vocabularyWordDao.updateWord(entity)
-
-        // Синхронізувати з Firestore
-        if (firebaseAuth.currentUser != null && entity.firestoreId != null) {
-            scope.launch {
-                // Отримати firestoreId папки, якщо слово має folderId
-                val folderFirestoreId = entity.folderId?.let { folderId ->
-                    vocabularyFolderDao.getFolderById(folderId)?.firestoreId
-                }
-
-                val dto = VocabularyWordDto.fromEntity(
-                    entity,
-                    firebaseAuth.currentUser!!.uid,
-                    folderFirestoreId
-                )
-                vocabularyFirestoreDataSource.saveWord(dto)
-            }
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
         }
+
+        val dto = VocabularyWordDto.fromDomain(word, firebaseAuth.currentUser!!.uid)
+        val savedDto = firestoreDataSource.saveWord(dto).getOrElse { error ->
+            throw Exception("Failed to update word")
+        }
+
+        val savedWord = savedDto.toDomain()
+        val updatedList = wordsCache.value.map {
+            if (it.id == savedWord.id) savedWord else it
+        }
+
+        wordsCache.compareAndSet(wordsCache.value, updatedList)
     }
 
     override suspend fun deleteWord(word: Word) {
-        val entity = word.toEntity()
-
-        if (firebaseAuth.currentUser != null && entity.firestoreId != null) {
-            vocabularyFirestoreDataSource.deleteWord(entity.firestoreId)
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
         }
-        vocabularyWordDao.deleteWord(entity)
+
+        if (word.id.isEmpty()) {
+            throw Exception("Cannot delete word without ID")
+        }
+
+        firestoreDataSource.deleteWord(word.id).getOrElse { error ->
+            Timber.e(error, "Failed to delete word")
+            throw error
+        }
+
+        // Оновити кеш
+        wordsCache.value = wordsCache.value.filter { it.id != word.id }
     }
 
-    override suspend fun updatePracticeStats(wordId: Long, isCorrect: Boolean) {
-        vocabularyWordDao.updatePracticeStats(
-            wordId = wordId,
-            incrementCorrect = if (isCorrect) 1 else 0,
-            incrementIncorrect = if (isCorrect) 0 else 1,
-            timestamp = Date().time
+    override suspend fun updatePracticeStats(wordId: String, isCorrect: Boolean) {
+        val word = wordsCache.value.find { it.id == wordId } ?: return
+
+        val updatedWord = word.copy(
+            correctCount = if (isCorrect) word.correctCount + 1 else word.correctCount,
+            incorrectCount = if (!isCorrect) word.incorrectCount + 1 else word.incorrectCount,
+            lastPracticed = System.currentTimeMillis()
         )
+
+        updateWord(updatedWord)
     }
 
     override suspend fun deleteAllWords() {
-        vocabularyWordDao.deleteAllWords()
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
+        }
+
+        wordsCache.value.forEach { word ->
+            firestoreDataSource.deleteWord(word.id)
+        }
+
+        wordsCache.value = emptyList()
     }
 
-    override fun getWordsByFolder(folderId: Long): Flow<List<Word>> {
-        return vocabularyWordDao.getWordsByFolder(folderId).map { entities ->
-            entities.map { it.toDomain() }
+    override fun getWordsByFolder(folderId: String): Flow<List<Word>> {
+        return wordsCache.map { words ->
+            words.filter { it.folderId == folderId }
         }
     }
 
     override fun getWordsWithoutFolder(): Flow<List<Word>> {
-        return vocabularyWordDao.getWordsWithoutFolder().map { entities ->
-            entities.map { it.toDomain() }
+        return wordsCache.map { words ->
+            words.filter { it.folderId == null }
         }
     }
 
     override fun getAllFolders(): Flow<List<VocabularyFolder>> {
-        return vocabularyFolderDao.getAllFoldersWithWordCount().map { foldersWithCount ->
-            foldersWithCount.map { it.toDomain() }
+        return foldersCache.map { folders ->
+            folders.map { folder ->
+                val wordCount = wordsCache.value.count { it.folderId == folder.id }
+                folder.copy(wordCount = wordCount)
+            }
+            .sortedWith(compareByDescending<VocabularyFolder> { it.wordCount > 0 }.thenBy { it.name })
         }
     }
 
-    override suspend fun createFolder(name: String): Long {
-        val entity = VocabularyFolderEntity(name = name)
-        val localId = vocabularyFolderDao.insertFolder(entity)
+    override suspend fun createFolder(name: String): String {
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
+        }
 
-        if (firebaseAuth.currentUser != null) {
-            scope.launch {
-                val folderWithLocalId = entity.copy(id = localId)
-                val dto = VocabularyFolderDto.fromEntity(folderWithLocalId, firebaseAuth.currentUser!!.uid)
-                vocabularyFirestoreDataSource.saveFolder(dto).onSuccess { savedDto ->
-                    vocabularyFolderDao.insertFolder(folderWithLocalId.copy(firestoreId = savedDto.id))
-                }
+        val folder = VocabularyFolder(
+            id = "",
+            name = name,
+            createdAt = System.currentTimeMillis()
+        )
+
+        val dto = VocabularyFolderDto.fromDomain(folder, firebaseAuth.currentUser!!.uid)
+        val result = firestoreDataSource.saveFolder(dto)
+
+        val savedDto = result.getOrElse { error ->
+            Timber.e(error, "Failed to create folder")
+            throw error
+        }
+
+        // Оновити кеш
+        val savedFolder = savedDto.toDomain()
+        foldersCache.value = foldersCache.value + savedFolder
+
+        return savedDto.id
+    }
+
+    override suspend fun deleteFolder(folderId: String) {
+        if (firebaseAuth.currentUser == null) {
+            throw Exception("User not authenticated")
+        }
+
+        // Спочатку видалити всі слова папки через batch операцію
+        val wordsInFolder = wordsCache.value.filter { it.folderId == folderId }
+        val wordIds = wordsInFolder.map { it.id }
+
+        if (wordIds.isNotEmpty()) {
+            firestoreDataSource.deleteWordsBatch(wordIds).getOrElse { error ->
+                Timber.e(error, "Failed to delete words in folder")
+                throw error
             }
         }
 
-        return localId
-    }
-
-    override suspend fun deleteFolder(folderId: Long) {
-        val folder = vocabularyFolderDao.getFolderById(folderId)
-
-        if (firebaseAuth.currentUser != null && folder?.firestoreId != null) {
-            val wordsInFolder = vocabularyWordDao.getWordsByFolderSync(folderId)
-            wordsInFolder.forEach { word ->
-                if (word.firestoreId != null) {
-                    vocabularyFirestoreDataSource.deleteWord(word.firestoreId)
-                }
-            }
-
-            vocabularyFirestoreDataSource.deleteFolder(folder.firestoreId!!)
+        // Потім видалити папку
+        firestoreDataSource.deleteFolder(folderId).getOrElse { error ->
+            Timber.e(error, "Failed to delete folder")
+            throw error
         }
 
-        vocabularyFolderDao.deleteFolder(folderId)
+        // Оновити кеш
+        wordsCache.value = wordsCache.value.filter { it.folderId != folderId }
+        foldersCache.value = foldersCache.value.filter { it.id != folderId }
     }
+}
+
+// Extension functions для конвертації Dto -> Domain
+private fun VocabularyWordDto.toDomain(): Word {
+    return Word(
+        id = this.id,
+        english = this.english,
+        ukrainian = this.ukrainian,
+        example = this.example,
+        category = this.category,
+        difficulty = this.difficulty,
+        imageUrl = this.imageUrl,
+        folderId = this.folderId,
+        isLearned = this.isLearned,
+        practiceCount = this.practiceCount,
+        correctCount = this.correctCount,
+        incorrectCount = this.incorrectCount,
+        lastPracticed = this.lastPracticed,
+        createdAt = this.createdAt?.time ?: this.createdAtTimestamp,
+        isFavorite = this.isFavorite
+    )
+}
+
+private fun VocabularyFolderDto.toDomain(): VocabularyFolder {
+    return VocabularyFolder(
+        id = this.id,
+        name = this.name,
+        createdAt = this.createdAt?.time ?: this.createdAtTimestamp,
+        wordCount = 0 // буде розраховано в getAllFolders()
+    )
+}
+
+// Extension functions для конвертації Domain -> Dto
+private fun VocabularyWordDto.Companion.fromDomain(word: Word, userId: String): VocabularyWordDto {
+    return VocabularyWordDto(
+        id = word.id,
+        english = word.english,
+        ukrainian = word.ukrainian,
+        example = word.example,
+        category = word.category,
+        difficulty = word.difficulty,
+        imageUrl = word.imageUrl,
+        folderId = word.folderId,
+        isLearned = word.isLearned,
+        practiceCount = word.practiceCount,
+        correctCount = word.correctCount,
+        incorrectCount = word.incorrectCount,
+        lastPracticed = word.lastPracticed,
+        createdAtTimestamp = word.createdAt,
+        userId = userId,
+        isFavorite = word.isFavorite
+    )
+}
+
+private fun VocabularyFolderDto.Companion.fromDomain(folder: VocabularyFolder, userId: String): VocabularyFolderDto {
+    return VocabularyFolderDto(
+        id = folder.id,
+        name = folder.name,
+        createdAtTimestamp = folder.createdAt,
+        userId = userId
+    )
 }

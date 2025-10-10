@@ -1,19 +1,35 @@
 package com.molyavin.quizmate.flashcards.domain.model
 
-import com.molyavin.quizmate.feature.vocabulary.domain.model.Difficulty
-
 /**
  * Flash Card model
  */
 data class FlashCard(
-    val id: Long = 0,
+    val id: String = "",
     val frontText: String,
     val backText: String,
     val example: String? = null,
     val category: String? = null,
-    val difficulty: Difficulty = Difficulty.MEDIUM,
+    val difficulty: String = "MEDIUM",
     val imageUrl: String? = null,
-    val isFlipped: Boolean = false
+    val isFlipped: Boolean = false,
+    val isFavorite: Boolean = false
+)
+
+/**
+ * User choice for a card
+ */
+enum class CardChoice {
+    KNOWN,
+    UNKNOWN,
+    NONE
+}
+
+/**
+ * History entry for card review
+ */
+data class CardReviewHistory(
+    val cardId: String,
+    val choice: CardChoice
 )
 
 /**
@@ -22,10 +38,11 @@ data class FlashCard(
 data class FlashCardSession(
     val cards: List<FlashCard> = emptyList(),
     val currentIndex: Int = 0,
-    val knownCards: Set<Long> = emptySet(),
-    val unknownCards: Set<Long> = emptySet(),
+    val knownCards: Set<String> = emptySet(),
+    val unknownCards: Set<String> = emptySet(),
     val isFlipped: Boolean = false,
-    val showEnglishFirst: Boolean = true
+    val showEnglishFirst: Boolean = true,
+    val reviewHistory: List<CardReviewHistory> = emptyList()
 ) {
     val currentCard: FlashCard?
         get() = cards.getOrNull(currentIndex)
