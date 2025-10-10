@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 apply(from = "$rootDir/gradle/feature-module.gradle")
@@ -20,7 +20,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
 
     // Coil
     implementation(libs.coil.compose)
