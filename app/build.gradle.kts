@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
 }
 
@@ -74,7 +72,12 @@ dependencies {
     implementation(project(":feature:flashcards"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:favorites"))
-    implementation(project(":feature:auth"))
+
+    // Auth module - KMP structure
+    implementation(project(":feature:auth:domain"))
+    implementation(project(":feature:auth:data"))
+    implementation(project(":feature:auth:presentation"))
+
     implementation(project(":feature:settings"))
 
     // App-specific dependencies
@@ -85,7 +88,11 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.timber)
 
-    // Firebase
+    // GitLive Firebase (KMP)
+    implementation(libs.gitlive.firebase.auth)
+    implementation(libs.gitlive.firebase.common)
+
+    // Firebase Android SDK (для GitLive)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
@@ -93,4 +100,9 @@ dependencies {
 
     // Google Sign-In
     implementation(libs.play.services.auth)
+
+    // Koin DI
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
 }

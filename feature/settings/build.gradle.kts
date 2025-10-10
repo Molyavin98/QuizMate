@@ -14,7 +14,10 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":feature:auth"))
+
+    // Auth module - KMP structure
+    implementation(project(":feature:auth:domain"))
+    implementation(project(":feature:auth:data"))
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)

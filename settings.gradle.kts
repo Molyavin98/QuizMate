@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 dependencyResolutionManagement {
@@ -16,6 +17,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -28,6 +30,11 @@ include(":feature:quiz")
 include(":feature:flashcards")
 include(":feature:splash")
 include(":feature:favorites")
-include(":feature:auth")
+
+// Auth module - KMP structure
+include(":feature:auth:domain")
+include(":feature:auth:data")
+include(":feature:auth:presentation")
+
 include(":feature:settings")
  
