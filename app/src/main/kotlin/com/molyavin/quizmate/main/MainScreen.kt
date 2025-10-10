@@ -197,9 +197,8 @@ fun MainScreen() {
                 ProfileScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToLogin = {
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
+                        // Навігація на login відбувається автоматично через зміну authState в MainActivity
+                        // Тому тут нічого не робимо - SettingsViewModel вже викликав SignOut
                     }
                 )
             }

@@ -23,6 +23,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "QuizMate"
 include(":app")
+include(":composeApp")  // Новый Compose Multiplatform модуль
 include(":core")
 include(":feature:home")
 include(":feature:vocabulary")

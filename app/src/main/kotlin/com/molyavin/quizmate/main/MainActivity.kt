@@ -19,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.molyavin.quizmate.BuildConfig
-import com.molyavin.quizmate.R
 import com.molyavin.quizmate.core.theme.QuizMateTheme
 import com.molyavin.quizmate.feature.auth.domain.model.AuthState
 import com.molyavin.quizmate.feature.auth.presentation.ui.login.AuthLoginViewModel
@@ -71,6 +70,27 @@ class MainActivity : ComponentActivity() {
                         is AuthState.Loading -> "login" // fallback
                     }
 
+                    // Реактивна навігація при зміні стану аутентифікації
+                    LaunchedEffect(authState) {
+                        when (authState) {
+                            is AuthState.Authenticated -> {
+                                if (navController.currentDestination?.route != "main") {
+                                    navController.navigate("main") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            }
+                            is AuthState.Unauthenticated -> {
+                                if (navController.currentDestination?.route != "login") {
+                                    navController.navigate("login") {
+                                        popUpTo(0) { inclusive = true }
+                                    }
+                                }
+                            }
+                            is AuthState.Loading -> {}
+                        }
+                    }
+
                     NavHost(
                         navController = navController,
                         startDestination = startDestination
@@ -106,7 +126,6 @@ class MainActivity : ComponentActivity() {
                                 viewModel = registerViewModel
                             )
                         }
-
                         composable("main") {
                             MainScreen()
                         }
