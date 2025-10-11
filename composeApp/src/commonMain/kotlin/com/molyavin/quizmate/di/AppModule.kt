@@ -4,7 +4,6 @@ import com.molyavin.quizmate.AppViewModel
 import com.molyavin.quizmate.feature.auth.data.di.authDataModule
 import com.molyavin.quizmate.feature.auth.domain.di.authDomainModule
 import com.molyavin.quizmate.feature.auth.presentation.di.authPresentationModule
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 /**
@@ -12,7 +11,7 @@ import org.koin.dsl.module
  * Объединяет все feature модули
  */
 val appModule = module {
-    viewModelOf(::AppViewModel)
+    single { AppViewModel(get()) }
 
     // Подключаем все feature модули
     includes(

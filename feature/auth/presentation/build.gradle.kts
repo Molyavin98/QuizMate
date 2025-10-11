@@ -29,6 +29,7 @@ kotlin {
         commonMain.dependencies {
             // Domain модуль
             implementation(project(":feature:auth:domain"))
+            implementation(project(":core"))
 
             // Compose Multiplatform
             implementation(compose.runtime)
@@ -44,22 +45,9 @@ kotlin {
 
             // Koin DI (KMP)
             implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
         }
 
         androidMain.dependencies {
-            // Core module (для темы)
-            implementation(project(":core"))
-
-            // Android Compose
-            implementation(libs.androidx.compose.ui)
-            implementation(libs.androidx.compose.ui.tooling.preview)
-            implementation(libs.androidx.compose.material3)
-            implementation(libs.androidx.compose.material.icons.extended)
-            implementation(libs.androidx.lifecycle.viewmodel.compose)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-
             // Koin Android
             implementation(libs.koin.android)
         }

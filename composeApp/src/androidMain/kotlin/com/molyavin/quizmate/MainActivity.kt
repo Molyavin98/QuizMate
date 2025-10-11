@@ -12,16 +12,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.molyavin.quizmate.core.viewmodel.KmpViewModel
 import com.molyavin.quizmate.feature.auth.presentation.ui.login.AuthLoginViewModel
 import com.molyavin.quizmate.feature.auth.presentation.ui.register.AuthRegisterViewModel
-import org.koin.android.ext.android.inject
-import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
-    private var currentViewModel: Any? = null
+    private var currentViewModel: KmpViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +32,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             // Общий Compose UI для Android и iOS
             App(
-                onGoogleSignInClick = { startGoogleSignIn() }
+                onGoogleSignInClick = { startGoogleSignIn() },
+                onActiveViewModelChanged = { viewModel -> currentViewModel = viewModel }
             )
         }
     }

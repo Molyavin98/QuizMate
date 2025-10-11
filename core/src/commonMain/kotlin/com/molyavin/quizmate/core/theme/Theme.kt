@@ -1,19 +1,14 @@
 package com.molyavin.quizmate.core.theme
 
-import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 // Custom colors for gradient theme
 data class QuizMateColors(
@@ -51,22 +46,11 @@ fun QuizMateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = GradientStart.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
+    PlatformThemeSideEffects(darkTheme)
 
     CompositionLocalProvider(LocalQuizMateColors provides QuizMateColors()) {
         MaterialTheme(
-            colorScheme = colorScheme,
+            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
             typography = Typography,
             content = content
         )
@@ -78,3 +62,6 @@ object QuizMateTheme {
         @Composable
         get() = LocalQuizMateColors.current
 }
+
+@Composable
+internal expect fun PlatformThemeSideEffects(darkTheme: Boolean)

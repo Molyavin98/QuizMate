@@ -1,7 +1,6 @@
 package com.molyavin.quizmate
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.molyavin.quizmate.core.viewmodel.KmpViewModel
 import com.molyavin.quizmate.feature.auth.domain.model.AuthState
 import com.molyavin.quizmate.feature.auth.domain.usecase.AuthObserveAuthStateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,7 @@ import kotlinx.coroutines.launch
  */
 class AppViewModel(
     authObserveAuthStateUseCase: AuthObserveAuthStateUseCase
-) : ViewModel() {
+) : KmpViewModel() {
 
     private val _authStateModel = MutableStateFlow<AuthState>(AuthState.Loading)
     val authStateModel: StateFlow<AuthState> = _authStateModel.asStateFlow()
