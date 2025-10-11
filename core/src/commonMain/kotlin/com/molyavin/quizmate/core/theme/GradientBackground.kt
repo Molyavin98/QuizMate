@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 
 /**
- * Gradient background для всіх екранів
+ * Gradient background for shared screens.
  */
 @Composable
 fun GradientBackground(
